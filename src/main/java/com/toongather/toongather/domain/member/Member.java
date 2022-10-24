@@ -1,4 +1,4 @@
-package com.toongather.toongather.domain;
+package com.toongather.toongather.domain.member;
 
 
 import lombok.Getter;

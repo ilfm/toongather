@@ -1,7 +1,7 @@
-package com.toongather.toongather.repository;
+package com.toongather.toongather.repository.member;
 
 
-import com.toongather.toongather.domain.Member;
+import com.toongather.toongather.domain.member.Member;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
