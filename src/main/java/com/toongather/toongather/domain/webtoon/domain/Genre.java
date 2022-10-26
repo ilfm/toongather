@@ -1,4 +1,4 @@
-package com.toongather.toongather.domain.model;
+package com.toongather.toongather.domain.webtoon.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

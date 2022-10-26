@@ -1,26 +1,26 @@
-package com.toongather.toongather.domain.model;
-
+package com.toongather.toongather.domain.webtoon.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "WEBTOON_PLATFORM")
-public class Platform {
-
-    public Platform() {
-
-    }
+@Table(name = "WEBTOON_WEEK")
+public class Week {
 
     @Id
-    private String platformId;
+    private String weekId;
 
     @Column(nullable = false)
-    private String platformNm;
+    private String weekNm;
+
+    @Column(nullable = false)
+    private String toonId;
 
     @Column(nullable = false)
     private String regUserId;
@@ -34,20 +34,28 @@ public class Platform {
     @Column(nullable = false)
     private LocalDateTime amdDt;
 
-    public String getPlatformId() {
-        return platformId;
+    public String getWeekId() {
+        return weekId;
     }
 
-    public void setPlatformId(String platformId) {
-        this.platformId = platformId;
+    public void setWeekId(String weekId) {
+        this.weekId = weekId;
     }
 
-    public String getPlatformNm() {
-        return platformNm;
+    public String getWeekNm() {
+        return weekNm;
     }
 
-    public void setPlatformNm(String platformNm) {
-        this.platformNm = platformNm;
+    public void setWeekNm(String weekNm) {
+        this.weekNm = weekNm;
+    }
+
+    public String getToonId() {
+        return toonId;
+    }
+
+    public void setToonId(String toonId) {
+        this.toonId = toonId;
     }
 
     public String getRegUserId() {

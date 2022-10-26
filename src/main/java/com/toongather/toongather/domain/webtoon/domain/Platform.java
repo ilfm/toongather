@@ -1,27 +1,26 @@
-package com.toongather.toongather.domain.keyword;
+package com.toongather.toongather.domain.webtoon.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "KEYWORD")
-public class Keyword {
+@Table(name = "WEBTOON_PLATFORM")
+public class Platform {
 
-    public Keyword() {
+    public Platform() {
+
     }
 
     @Id
-    private String keywordId;
+    private String platformId;
 
     @Column(nullable = false)
-    private String keywordNm;
+    private String platformNm;
 
     @Column(nullable = false)
     private String regUserId;
@@ -35,20 +34,20 @@ public class Keyword {
     @Column(nullable = false)
     private LocalDateTime amdDt;
 
-    public String getKeywordId() {
-        return keywordId;
+    public String getPlatformId() {
+        return platformId;
     }
 
-    public void setKeywordId(String keywordId) {
-        this.keywordId = keywordId;
+    public void setPlatformId(String platformId) {
+        this.platformId = platformId;
     }
 
-    public String getKeywordNm() {
-        return keywordNm;
+    public String getPlatformNm() {
+        return platformNm;
     }
 
-    public void setKeywordNm(String keywordNm) {
-        this.keywordNm = keywordNm;
+    public void setPlatformNm(String platformNm) {
+        this.platformNm = platformNm;
     }
 
     public String getRegUserId() {

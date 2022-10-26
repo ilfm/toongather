@@ -1,7 +1,7 @@
 package com.toongather.toongather;
 
-import com.toongather.toongather.domain.model.Platform;
-import com.toongather.toongather.repository.platform.PlatformRepository;
+import com.toongather.toongather.domain.webtoon.domain.Platform;
+import com.toongather.toongather.domain.webtoon.repository.PlatformRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

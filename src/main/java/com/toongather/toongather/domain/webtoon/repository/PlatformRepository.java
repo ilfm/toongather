@@ -1,7 +1,7 @@
-package com.toongather.toongather.repository.platform;
+package com.toongather.toongather.domain.webtoon.repository;
 
 
-import com.toongather.toongather.domain.model.Platform;
+import com.toongather.toongather.domain.webtoon.domain.Platform;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

@@ -1,4 +1,4 @@
-package com.toongather.toongather.domain.model;
+package com.toongather.toongather.domain.webtoon.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -10,17 +10,16 @@ import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "WEBTOON_WEEK")
-public class Week {
+@Table(name = "GENRE")
+public class Webtoon {
 
+    public Webtoon() {
+    }
     @Id
-    private String weekId;
+    private String genreId;
 
     @Column(nullable = false)
-    private String weekNm;
-
-    @Column(nullable = false)
-    private String toonId;
+    private String genreNm;
 
     @Column(nullable = false)
     private String regUserId;
@@ -34,28 +33,20 @@ public class Week {
     @Column(nullable = false)
     private LocalDateTime amdDt;
 
-    public String getWeekId() {
-        return weekId;
+    public String getGenreId() {
+        return genreId;
     }
 
-    public void setWeekId(String weekId) {
-        this.weekId = weekId;
+    public void setGenreId(String genreId) {
+        this.genreId = genreId;
     }
 
-    public String getWeekNm() {
-        return weekNm;
+    public String getGenreNm() {
+        return genreNm;
     }
 
-    public void setWeekNm(String weekNm) {
-        this.weekNm = weekNm;
-    }
-
-    public String getToonId() {
-        return toonId;
-    }
-
-    public void setToonId(String toonId) {
-        this.toonId = toonId;
+    public void setGenreNm(String genreNm) {
+        this.genreNm = genreNm;
     }
 
     public String getRegUserId() {
