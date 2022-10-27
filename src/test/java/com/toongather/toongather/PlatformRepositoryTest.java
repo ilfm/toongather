@@ -24,7 +24,7 @@ public class PlatformRepositoryTest {
     @Rollback(false)
     public void testPlatform() {
         Platform platform = new Platform();
-        platform.setPlatformId("PF000001");
+
         platform.setPlatformNm("네이버");
         platform.setAmdUserId("1");
         platform.setRegUserId("1");

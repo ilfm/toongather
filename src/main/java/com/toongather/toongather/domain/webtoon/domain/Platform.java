@@ -2,6 +2,8 @@ package com.toongather.toongather.domain.webtoon.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toongather.toongather.SeqGenerator;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -17,6 +19,10 @@ public class Platform {
     }
 
     @Id
+    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+                      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.METHOD,value="SEQ"),
+                                   @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WTPF")} )
+    @GeneratedValue(generator = "seqGenerator")
     private String platformId;
 
     @Column(nullable = false)
