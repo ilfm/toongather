@@ -10,19 +10,28 @@ import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "GENRE")
+@Table(name = "WEBTOON_REVIEW")
 public class Review {
 
     public Review() {
     }
     @Id
-    private String genreId;
+    private String reviewId;
 
     @Column(nullable = false)
-    private String genreNm;
+    private String toonId;
 
     @Column(nullable = false)
-    private String regUserId;
+    private Long memberId;
+
+    @Column(nullable = false)
+    private String comment;
+
+    @Column(nullable = false)
+    private String record;
+
+    @Column(nullable = false)
+    private Long star;
 
     @Column(nullable = false)
     private String amdUserId;
@@ -33,51 +42,5 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime amdDt;
 
-    public String getGenreId() {
-        return genreId;
-    }
 
-    public void setGenreId(String genreId) {
-        this.genreId = genreId;
-    }
-
-    public String getGenreNm() {
-        return genreNm;
-    }
-
-    public void setGenreNm(String genreNm) {
-        this.genreNm = genreNm;
-    }
-
-    public String getRegUserId() {
-        return regUserId;
-    }
-
-    public void setRegUserId(String regUserId) {
-        this.regUserId = regUserId;
-    }
-
-    public String getAmdUserId() {
-        return amdUserId;
-    }
-
-    public void setAmdUserId(String amdUserId) {
-        this.amdUserId = amdUserId;
-    }
-
-    public LocalDateTime getRegDt() {
-        return regDt;
-    }
-
-    public void setRegDt(LocalDateTime regDt) {
-        this.regDt = regDt;
-    }
-
-    public LocalDateTime getAmdDt() {
-        return amdDt;
-    }
-
-    public void setAmdDt(LocalDateTime amdDt) {
-        this.amdDt = amdDt;
-    }
 }

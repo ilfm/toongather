@@ -10,19 +10,29 @@ import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "GENRE")
+@Table
 public class Webtoon {
 
     public Webtoon() {
+
     }
     @Id
-    private String genreId;
+    private String toonId;
 
     @Column(nullable = false)
-    private String genreNm;
+    private String title;
 
     @Column(nullable = false)
-    private String regUserId;
+    private String summary;
+
+    @Column(nullable = false)
+    private String writerNm;
+
+    @Column(nullable = false)
+    private String age;
+
+    @Column(nullable = false)
+    private String endFlag;
 
     @Column(nullable = false)
     private String amdUserId;
@@ -33,28 +43,52 @@ public class Webtoon {
     @Column(nullable = false)
     private LocalDateTime amdDt;
 
-    public String getGenreId() {
-        return genreId;
+    public String getToonId() {
+        return toonId;
     }
 
-    public void setGenreId(String genreId) {
-        this.genreId = genreId;
+    public void setToonId(String toonId) {
+        this.toonId = toonId;
     }
 
-    public String getGenreNm() {
-        return genreNm;
+    public String getTitle() {
+        return title;
     }
 
-    public void setGenreNm(String genreNm) {
-        this.genreNm = genreNm;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getRegUserId() {
-        return regUserId;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setRegUserId(String regUserId) {
-        this.regUserId = regUserId;
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getWriterNm() {
+        return writerNm;
+    }
+
+    public void setWriterNm(String writerNm) {
+        this.writerNm = writerNm;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getEndFlag() {
+        return endFlag;
+    }
+
+    public void setEndFlag(String endFlag) {
+        this.endFlag = endFlag;
     }
 
     public String getAmdUserId() {
