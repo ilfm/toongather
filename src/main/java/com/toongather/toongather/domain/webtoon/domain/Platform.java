@@ -20,7 +20,7 @@ public class Platform {
 
     @Id
     @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-                      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.METHOD,value="SEQ"),
+                      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_PLATFORM_SEQ"),
                                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WTPF")} )
     @GeneratedValue(generator = "seqGenerator")
     private String platformId;

@@ -16,32 +16,49 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
+
+/**
+ * 사용자 정의 시퀀스를 반환합니다.
+ */
 public class SeqGenerator implements IdentifierGenerator {
 
-    public static final String METHOD = "method";
+    public static final String SEQ_NAME = "seqName";
     public static final String PREFIX = "prefix";
 
-    private String method;
+    private String seqName;
     private String prefix;
+
+    /**
+     * @GenericGenerator에서 넘어온 파라미터를 내부에 선언한 변수에 할당한다.
+     *
+     * @param type
+     * @param params @GenericGenerator에서 넘어온 파라미터
+     * @param serviceRegistry
+     * @throws MappingException
+     */
     @Override
     public void configure(Type type, Properties params, ServiceRegistry serviceRegistry) throws MappingException {
         IdentifierGenerator.super.configure(type, params, serviceRegistry);
 
-        this.method = ConfigurationHelper.getString(METHOD,params);
+        this.seqName = ConfigurationHelper.getString(SEQ_NAME,params);
         this.prefix = ConfigurationHelper.getString(PREFIX,params);
     }
 
+
+    /**
+     * 커스텀한 시퀀스를 반환한다.
+     * @param session
+     * @param object
+     * @return newSeq 사용자 정의 시퀀스
+     * @throws HibernateException
+     */
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
+
         String sql= null;
-        String newId= "";
-        switch (prefix){
-            case "WTPF":
-                sql = "SELECT WEBTOON_PLATFORM_SEQ.NEXTVAL FROM DUAL";
-                break;
-            default:
-                break;
-        }
+        String newSeq = "";
+
+        sql = "SELECT " +this.seqName +".NEXTVAL FROM DUAL";
         // JDBC Connection
         Connection con = null;
         try {
@@ -51,7 +68,7 @@ public class SeqGenerator implements IdentifierGenerator {
             ResultSet rs = callStatement.getResultSet();
 
             if(rs.next()) {
-                newId = this.prefix +"-"+ rs.getString(1); // 결과값 추출
+                newSeq = this.prefix +"-"+ rs.getString(1); // 결과값 추출
             }
         } catch (SQLException sqlException) {
             throw new HibernateException(sqlException);
@@ -65,7 +82,7 @@ public class SeqGenerator implements IdentifierGenerator {
                 }
             }
 
-            return newId;
+            return newSeq;
 
     }
 }
