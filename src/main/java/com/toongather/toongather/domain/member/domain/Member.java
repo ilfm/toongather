@@ -1,123 +1,87 @@
 package com.toongather.toongather.domain.member.domain;
 
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.time.LocalDateTime;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "MEMBER")
 @Entity
-@Getter @Setter
-public class Member {
+@Getter
+public class Member implements UserDetails {
 
     @Id @GeneratedValue
-    private Long memberNo;
+    @Column(name = "MEMBER_NO")
+    private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "PASSWORD")
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "EMAIL")
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "NAME")
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "PHONE")
     private String phone;
 
-    @Column(nullable = false)
-    private String nickname;
+    @Column(name = "NICKNAME")
+    private String nickName;
 
-    private String crt;
-    private LocalDateTime crtExpired;
-    private LocalDateTime lastLogin;
-    private String joinType;
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
+    private List<MebmerRole> memberRoles  = new ArrayList<>();
 
-    public Member() {
-    }
-
-    public Long getMemberNo() {
-        return memberNo;
-    }
-
-    public void setMemberNo(Long memberNo) {
-        this.memberNo = memberNo;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
+    @Builder
+    public Member(String name, String password) {
+        this.name = name;
+        this.email = "aaa@test.co.kr";
+        this.phone = "010-000-0000";
+        this.nickName = "test";
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        List<SimpleGrantedAuthority> collect = memberRoles.stream().map(entity -> new SimpleGrantedAuthority(entity.getRole().getName()))
+                .collect(Collectors.toList());
+
+       System.out.println(collect);
+
+        return collect;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public String getUsername() {
+        return null;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
     }
 
-    public String getPhone() {
-        return phone;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getCrt() {
-        return crt;
-    }
-
-    public void setCrt(String crt) {
-        this.crt = crt;
-    }
-
-    public LocalDateTime getCrtExpired() {
-        return crtExpired;
-    }
-
-    public void setCrtExpired(LocalDateTime crtExpired) {
-        this.crtExpired = crtExpired;
-    }
-
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
-    public String getJoinType() {
-        return joinType;
-    }
-
-    public void setJoinType(String joinType) {
-        this.joinType = joinType;
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }

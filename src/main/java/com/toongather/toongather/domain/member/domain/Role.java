@@ -1,39 +1,37 @@
 package com.toongather.toongather.domain.member.domain;
 
-
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "ROLE")
 @Entity
-@Getter @Setter
+@Getter
 public class Role {
 
     @Id @GeneratedValue
-    private Long roleId;
-    private String roleNm;
+    @Column(name = "ROLE_ID")
+    private int id;
 
-    public Role() {
+    @Column(name= "ROLE_NM")
+    private String name;
 
+    @OneToMany(mappedBy = "role")
+    private List<MebmerRole> roleMembers = new ArrayList<>();
+
+
+    @Builder
+    public Role (String name) {
+        this.id = 1;
+        this.name = name;
     }
 
-    public Long getRoleId() {
-        return roleId;
-    }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getRoleNm() {
-        return roleNm;
-    }
-
-    public void setRoleNm(String roleNm) {
-        this.roleNm = roleNm;
-    }
 }

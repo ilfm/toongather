@@ -23,8 +23,8 @@ public class MemberRepositoryTest {
     @Transactional
     @Rollback(false)
     public void testMember() {
-        Member member = new Member();
-        member.setName("memberB");
+        Member member = new Member("memberA", "1234");
+
         Long savedId = memberRepository.save(member);
         Member findMember = memberRepository.find(savedId);
         Assertions.assertThat(findMember).isEqualTo(member); //JPA 엔티티 동일성 보장
