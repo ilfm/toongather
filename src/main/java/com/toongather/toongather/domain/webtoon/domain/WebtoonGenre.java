@@ -3,21 +3,27 @@ package com.toongather.toongather.domain.webtoon.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.toongather.toongather.global.common.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "GENRE")
-public class Genre extends BaseEntity {
+@Table(name = "WEBTOON_GENRE")
+public class WebtoonGenre extends BaseEntity {
 
-    public Genre() {
+    public WebtoonGenre() {
     }
+
     @Id
-    private String genreId;
+    private String webtoonGenreId;
+
+    @ManyToOne
+    @JoinColumn(name = "genreId")
+    private Genre genre;
+
+    @ManyToOne
+    @JoinColumn(name = "toonId")
+    private Webtoon webtoon;
 
     @Column(nullable = false)
     private String genreNm;
@@ -34,13 +40,6 @@ public class Genre extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime amdDt;
 
-    public String getGenreId() {
-        return genreId;
-    }
-
-    public void setGenreId(String genreId) {
-        this.genreId = genreId;
-    }
 
     public String getGenreNm() {
         return genreNm;

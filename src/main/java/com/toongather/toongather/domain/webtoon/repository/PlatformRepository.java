@@ -12,8 +12,19 @@ public class PlatformRepository {
 
     @PersistenceContext
     EntityManager em;
+
     public String save(Platform platform){
         em.persist(platform);
+        em.flush();
         return platform.getPlatformId();
+    }
+
+    public String update(Platform platform){
+        platform.setPlatformNm("봄툰2");
+        return platform.getPlatformId();
+    }
+
+    public Platform find(String platformId){
+        return em.find(Platform.class,platformId);
     }
 }

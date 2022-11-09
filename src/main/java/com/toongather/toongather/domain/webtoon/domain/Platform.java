@@ -3,16 +3,22 @@ package com.toongather.toongather.domain.webtoon.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.toongather.toongather.SeqGenerator;
+import com.toongather.toongather.global.common.BaseEntity;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "WEBTOON_PLATFORM")
-public class Platform {
+public class Platform extends BaseEntity {
 
     public Platform() {
 
@@ -33,12 +39,6 @@ public class Platform {
 
     @Column(nullable = false)
     private String amdUserId;
-
-    @Column(nullable = false)
-    private LocalDateTime regDt;
-
-    @Column(nullable = false)
-    private LocalDateTime amdDt;
 
     public String getPlatformId() {
         return platformId;
@@ -72,19 +72,4 @@ public class Platform {
         this.amdUserId = amdUserId;
     }
 
-    public LocalDateTime getRegDt() {
-        return regDt;
-    }
-
-    public void setRegDt(LocalDateTime regDt) {
-        this.regDt = regDt;
-    }
-
-    public LocalDateTime getAmdDt() {
-        return amdDt;
-    }
-
-    public void setAmdDt(LocalDateTime amdDt) {
-        this.amdDt = amdDt;
-    }
 }

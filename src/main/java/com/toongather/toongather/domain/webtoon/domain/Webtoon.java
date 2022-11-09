@@ -1,6 +1,7 @@
 package com.toongather.toongather.domain.webtoon.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toongather.toongather.global.common.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
 @Table
-public class Webtoon {
+public class Webtoon extends BaseEntity {
 
     public Webtoon() {
 
@@ -99,16 +100,8 @@ public class Webtoon {
         this.amdUserId = amdUserId;
     }
 
-    public LocalDateTime getRegDt() {
-        return regDt;
-    }
-
     public void setRegDt(LocalDateTime regDt) {
         this.regDt = regDt;
-    }
-
-    public LocalDateTime getAmdDt() {
-        return amdDt;
     }
 
     public void setAmdDt(LocalDateTime amdDt) {

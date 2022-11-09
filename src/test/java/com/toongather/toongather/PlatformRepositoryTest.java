@@ -28,10 +28,22 @@ public class PlatformRepositoryTest {
         platform.setPlatformNm("네이버");
         platform.setAmdUserId("1");
         platform.setRegUserId("1");
-        platform.setAmdDt(LocalDateTime.now());
-        platform.setRegDt(LocalDateTime.now());
+        //platform.setAmdDt(LocalDateTime.now());
+        //platform.setRegDt(LocalDateTime.now());
         String id =  platformRepository.save(platform);
-        System.out.println("id = " + id);
+        //System.out.println("id = " + id);
+
+    }
+
+
+    @Test
+    @Transactional
+    @Rollback(false)
+    public void 플랫폼_변경후_업데이트날짜_변경확인() {
+
+        Platform platform =  platformRepository.find("WTPF-39");
+        platformRepository.update(platform);
+        //System.out.println("id = " + id);
 
     }
 }
