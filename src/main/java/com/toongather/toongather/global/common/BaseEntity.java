@@ -2,6 +2,7 @@ package com.toongather.toongather.global.common;
 
 
 import lombok.Getter;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,21 +14,26 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@EntityListeners(AuditingEntityListener.class)
+
 @MappedSuperclass
 @Getter
-public class BaseEntity {
+public abstract class BaseEntity {
 
-    @CreatedDate
-    @Column(nullable = false)
+    @Column(updatable = false)
     private String regDt;
 
-    @LastModifiedDate
-    @Column(updatable = false)
+    @Column
     private String amdDt;
+
+    @Column
+    private String regUserId;
+
+    @Column
+    private String amdUserId;
 
     @PrePersist // 엔티티 저장하기 전
     void onPrePersist(){
+
         LocalDateTime now =LocalDateTime.now();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.regDt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
