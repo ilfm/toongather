@@ -4,15 +4,15 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:h2:tcp://localhost/C:\study\jpashop
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-    #driver-class-name: org.mariadb.jdbc.Driver
-#    driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://localhost:13306/toongather?characterEncoding=UTF-8&serverTimezone=UTC
-#    username: webtoon
-#    password: toon123!@
+  #  url: jdbc:h2:tcp://localhost/C:\study\jpashop
+  #  username: sa
+  #  password:
+  #  driver-class-name: org.h2.Driver
+
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:13306/toongather?characterEncoding=UTF-8&serverTimezone=UTC
+    username: webtoon
+    password: toon123!@
     hikari:
       pool-name: SpringBootJPAHikariCP
       maximum-pool-size: 2
@@ -23,14 +23,5 @@ spring:
       connection-init-sql: set wait_timeout = 600
 
   jpa:
-    show-sql: true
     hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        format_sql: true
-
-  logging.level:
-    org.hibernate.SQL: debug
+      ddl-auto: none

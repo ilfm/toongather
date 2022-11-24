@@ -8,13 +8,17 @@ spring:
     username: webtoon
     password: toon123!@
     driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: SpringBootJPAHikariCP
+      maximum-pool-size: 2
+      idle-timeout: 10000
+      connection-timeout: 10000
+      validation-timeout: 10000
+      max-lifetime: 28770000
+      connection-init-sql: set wait_timeout = 600
 
   jpa:
     hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        format_sql: true
+      ddl-auto: update
 
-logging.level:
-  org.hibernate.SQL: debug
+
