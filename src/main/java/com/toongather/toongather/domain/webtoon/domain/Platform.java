@@ -16,8 +16,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "WEBTOON_PLATFORM")
+@Table(name = "PLATFORM")
 public class Platform extends BaseEntity {
 
     public Platform() {
@@ -26,8 +25,8 @@ public class Platform extends BaseEntity {
 
     @Id
     @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-                      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_PLATFORM_SEQ"),
-                                   @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WTPF")} )
+                      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="PLATFORM_SEQ"),
+                                   @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="PF")} )
     @GeneratedValue(generator = "seqGenerator")
     private String platformId;
 

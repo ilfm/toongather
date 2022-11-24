@@ -2,11 +2,10 @@ package com.toongather.toongather.domain.keyword.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toongather.toongather.SeqGenerator;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
@@ -18,6 +17,10 @@ public class Keyword {
     }
 
     @Id
+    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="KEYWORD_SEQ"),
+                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="KW")} )
+    @GeneratedValue(generator = "seqGenerator")
     private String keywordId;
 
     @Column(nullable = false)

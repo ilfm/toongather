@@ -1,6 +1,8 @@
 package com.toongather.toongather.domain.member.domain;
 
+import com.toongather.toongather.SeqGenerator;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +20,11 @@ import java.util.stream.Collectors;
 @Getter
 public class Member implements UserDetails {
 
-    @Id @GeneratedValue
+    @Id
+    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="REVIEW_SEQ"),
+                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="MB")} )
+    @GeneratedValue(generator = "seqGenerator")
     @Column(name = "MEMBER_NO")
     private Long id;
 

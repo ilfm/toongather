@@ -1,23 +1,26 @@
 package com.toongather.toongather.domain.webtoon.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.global.common.BaseEntity;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table
+@Table(name="WEBTOON")
 public class Webtoon extends BaseEntity {
 
     public Webtoon() {
 
     }
     @Id
+    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_SEQ"),
+                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WT")} )
+    @GeneratedValue(generator = "seqGenerator")
     private String toonId;
 
     @Column(nullable = false)
@@ -38,11 +41,6 @@ public class Webtoon extends BaseEntity {
     @Column(nullable = false)
     private String amdUserId;
 
-    @Column(nullable = false)
-    private LocalDateTime regDt;
-
-    @Column(nullable = false)
-    private LocalDateTime amdDt;
 
     public String getToonId() {
         return toonId;
@@ -100,11 +98,4 @@ public class Webtoon extends BaseEntity {
         this.amdUserId = amdUserId;
     }
 
-    public void setRegDt(LocalDateTime regDt) {
-        this.regDt = regDt;
-    }
-
-    public void setAmdDt(LocalDateTime amdDt) {
-        this.amdDt = amdDt;
-    }
 }

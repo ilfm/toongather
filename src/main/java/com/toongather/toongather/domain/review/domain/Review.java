@@ -1,21 +1,27 @@
 package com.toongather.toongather.domain.review.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.global.common.BaseEntity;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "WEBTOON_REVIEW")
+@Table(name = "REVIEW")
 public class Review extends BaseEntity {
 
     public Review() {
     }
     @Id
+    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="REVIEW_SEQ"),
+                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="RV")} )
+    @GeneratedValue(generator = "seqGenerator")
     private String reviewId;
 
     @ManyToOne
@@ -37,12 +43,6 @@ public class Review extends BaseEntity {
 
     @Column(nullable = false)
     private String amdUserId;
-
-    @Column(nullable = false)
-    private LocalDateTime regDt;
-
-    @Column(nullable = false)
-    private LocalDateTime amdDt;
 
 
 }

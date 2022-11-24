@@ -1,24 +1,31 @@
 package com.toongather.toongather.domain.webtoon.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.global.common.BaseEntity;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
 @Entity
-@Table(name = "WEBTOON_WEEK")
+@Table(name = "WEEK")
 public class Week extends BaseEntity {
 
+
     @Id
+    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEEK_SEQ"),
+                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WW")} )
+    @GeneratedValue(generator = "seqGenerator")
     private String weekId;
 
     @Column(nullable = false)
     private String weekNm;
 
     @ManyToOne
-    @JoinColumn(name="toonId")
+    @JoinColumn(name="toonId",referencedColumnName = "")
     private Webtoon webtoon;
 
     @Column(nullable = false)
@@ -26,12 +33,6 @@ public class Week extends BaseEntity {
 
     @Column(nullable = false)
     private String amdUserId;
-
-    @Column(nullable = false)
-    private LocalDateTime regDt;
-
-    @Column(nullable = false)
-    private LocalDateTime amdDt;
 
     public String getWeekId() {
         return weekId;
@@ -65,13 +66,6 @@ public class Week extends BaseEntity {
         this.amdUserId = amdUserId;
     }
 
-    public void setRegDt(LocalDateTime regDt) {
-        this.regDt = regDt;
-    }
-
-    public void setAmdDt(LocalDateTime amdDt) {
-        this.amdDt = amdDt;
-    }
 
 
 }
