@@ -8,12 +8,10 @@ import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
 
+import javax.swing.plaf.nimbus.State;
 import javax.xml.transform.Result;
 import java.io.Serializable;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Properties;
 
 
@@ -58,14 +56,13 @@ public class SeqGenerator implements IdentifierGenerator {
         String sql= null;
         String newSeq = "";
 
-        sql = "SELECT " +this.seqName +".NEXTVAL FROM DUAL";
+        sql = "SELECT NEXTVAL(" +this.seqName +")";
         // JDBC Connection
         Connection con = null;
         try {
             con = session.getJdbcConnectionAccess().obtainConnection();  // 공유세션으로부터 jdbc connection을 얻는다
-            CallableStatement callStatement = con.prepareCall(sql);
-            callStatement.executeQuery(); // SQL를 실행
-            ResultSet rs = callStatement.getResultSet();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql); // SQL를 실행
 
             if(rs.next()) {
                 newSeq = this.prefix +"-"+ rs.getString(1); // 결과값 추출
