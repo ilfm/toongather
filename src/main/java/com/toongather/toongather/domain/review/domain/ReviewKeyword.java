@@ -21,15 +21,15 @@ public class ReviewKeyword extends BaseEntity {
     private String reviewKeywordId;
 
     @ManyToOne
-    @JoinColumn(name="reviewId")
+    @JoinColumn(name="reviewId",foreignKey = @ForeignKey(name = "fk_reviewkeword_to_review"))
     private Review review;
 
     @ManyToOne
-    @JoinColumn(name="toonId")
+    @JoinColumn(name="toonId",foreignKey = @ForeignKey(name = "fk_reviewkeword_to_toon"))
     private Webtoon webtoon;
 
     @ManyToOne
-    @JoinColumn(name="MEMBER_NO")
+    @JoinColumn(name="MEMBER_NO",foreignKey = @ForeignKey(name = "fk_reviewkeword_to_member"))
     private Member member;
 
     @Column

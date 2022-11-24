@@ -18,11 +18,11 @@ public class WebtoonGenreKeyword extends BaseEntity {
     private String webtoonGenreKeywordId;
 
     @ManyToOne
-    @JoinColumn(name="toonId")
+    @JoinColumn(name="toonId",foreignKey = @ForeignKey(name = "fk_toongenrekeword_to_toon"))
     private Webtoon webtoon;
 
     @ManyToOne
-    @JoinColumn(name="genreKeywordId")
+    @JoinColumn(name="genreKeywordId",foreignKey = @ForeignKey(name = "fk_toongenrekeword_to_genrekeyword"))
     private GenreKeyword genreKeyword;
 
     public String getWebtoonGenreKeywordId() {

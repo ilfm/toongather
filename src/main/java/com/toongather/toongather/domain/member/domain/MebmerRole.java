@@ -23,12 +23,13 @@ public class MebmerRole {
     @Column(name = "NO")
     private int id;
 
+
     @ManyToOne
-    @JoinColumn(name = "MEMBER_NO",referencedColumnName = "MEMBER_NO")
+    @JoinColumn(name = "MEMBER_NO",foreignKey = @ForeignKey(name = "fk_memberrole_to_member"))
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "ROLE_ID",referencedColumnName = "ROLE_ID")
+    @JoinColumn(name = "ROLE_ID",foreignKey = @ForeignKey(name = "fk_memberrole_to_role"))
     private Role role;
 
     @Builder MebmerRole(Member member, Role role) {

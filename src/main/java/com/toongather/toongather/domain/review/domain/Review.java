@@ -25,11 +25,11 @@ public class Review extends BaseEntity {
     private String reviewId;
 
     @ManyToOne
-    @JoinColumn(name="toonId")
+    @JoinColumn(name="toonId",foreignKey = @ForeignKey(name = "fk_review_to_toon"))
     private Webtoon webtoon;
 
     @ManyToOne
-    @JoinColumn(name="MEMBER_NO")
+    @JoinColumn(name="MEMBER_NO",foreignKey = @ForeignKey(name = "fk_review_to_member"))
     private Member member;
 
     @Column(nullable = false)

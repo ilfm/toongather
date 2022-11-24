@@ -21,11 +21,10 @@ public class PlatformRepositoryTest {
 
     @Test
     @Transactional
-    @Rollback(false)
     public void testPlatform() {
         Platform platform = new Platform();
 
-        platform.setPlatformNm("네이버");
+        platform.setPlatformNm("네이버222");
         platform.setAmdUserId("1");
         platform.setRegUserId("1");
         //platform.setAmdDt(LocalDateTime.now());
@@ -41,7 +40,7 @@ public class PlatformRepositoryTest {
     @Rollback(false)
     public void 플랫폼_변경후_업데이트날짜_변경확인() {
 
-        Platform platform =  platformRepository.find("WTPF-39");
+        Platform platform =  platformRepository.find("WTPF-44");
         platformRepository.update(platform);
         //System.out.println("id = " + id);
 
