@@ -43,6 +43,9 @@ public class Member implements UserDetails {
     @Column(name = "NICKNAME")
     private String nickName;
 
+    @Column
+    private String imgPath;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<MebmerRole> memberRoles  = new ArrayList<>();
 

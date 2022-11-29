@@ -39,6 +39,9 @@ public class Webtoon extends BaseEntity {
     @Column(nullable = false)
     private String endFlag;
 
+    @Column
+    private String imgPath;
+
 
 
 }
