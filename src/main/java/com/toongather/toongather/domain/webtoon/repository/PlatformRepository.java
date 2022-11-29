@@ -19,10 +19,6 @@ public class PlatformRepository {
         return platform.getPlatformId();
     }
 
-    public String update(Platform platform){
-        platform.setPlatformNm("봄툰2");
-        return platform.getPlatformId();
-    }
 
     public Platform find(String platformId){
         return em.find(Platform.class,platformId);

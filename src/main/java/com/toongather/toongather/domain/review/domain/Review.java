@@ -5,12 +5,13 @@ import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.global.common.BaseEntity;
+import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+@Getter
 @Entity
 @Table(name = "REVIEW")
 public class Review extends BaseEntity {

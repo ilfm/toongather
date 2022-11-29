@@ -1,14 +1,15 @@
 package com.toongather.toongather.domain.webtoon.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.global.common.BaseEntity;
+import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
-@JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone="Asia/Seoul")
+
+@Getter
 @Entity
 @Table(name = "WEEK")
 public class Week extends BaseEntity {
@@ -34,37 +35,6 @@ public class Week extends BaseEntity {
     @Column(nullable = false)
     private String amdUserId;
 
-    public String getWeekId() {
-        return weekId;
-    }
-
-    public void setWeekId(String weekId) {
-        this.weekId = weekId;
-    }
-
-    public String getWeekNm() {
-        return weekNm;
-    }
-
-    public void setWeekNm(String weekNm) {
-        this.weekNm = weekNm;
-    }
-
-    public String getRegUserId() {
-        return regUserId;
-    }
-
-    public void setRegUserId(String regUserId) {
-        this.regUserId = regUserId;
-    }
-
-    public String getAmdUserId() {
-        return amdUserId;
-    }
-
-    public void setAmdUserId(String amdUserId) {
-        this.amdUserId = amdUserId;
-    }
 
 
 

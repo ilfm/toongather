@@ -4,6 +4,7 @@ package com.toongather.toongather.domain.webtoon.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.global.common.BaseEntity;
+import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
+@Getter
 @Entity
 @Table(name = "PLATFORM")
 public class Platform extends BaseEntity {
@@ -39,36 +40,5 @@ public class Platform extends BaseEntity {
     @Column(nullable = false)
     private String amdUserId;
 
-    public String getPlatformId() {
-        return platformId;
-    }
-
-    public void setPlatformId(String platformId) {
-        this.platformId = platformId;
-    }
-
-    public String getPlatformNm() {
-        return platformNm;
-    }
-
-    public void setPlatformNm(String platformNm) {
-        this.platformNm = platformNm;
-    }
-
-    public String getRegUserId() {
-        return regUserId;
-    }
-
-    public void setRegUserId(String regUserId) {
-        this.regUserId = regUserId;
-    }
-
-    public String getAmdUserId() {
-        return amdUserId;
-    }
-
-    public void setAmdUserId(String amdUserId) {
-        this.amdUserId = amdUserId;
-    }
 
 }

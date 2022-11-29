@@ -5,10 +5,12 @@ import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.global.common.BaseEntity;
+import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+@Getter
 @Table(name="REVIEW_KEYWORD")
 @Entity
 public class ReviewKeyword extends BaseEntity {
@@ -39,39 +41,5 @@ public class ReviewKeyword extends BaseEntity {
         return reviewKeywordId;
     }
 
-    public void setReviewKeywordId(String reviewKeywordId) {
-        this.reviewKeywordId = reviewKeywordId;
-    }
 
-    public Review getReview() {
-        return review;
-    }
-
-    public void setReview(Review review) {
-        this.review = review;
-    }
-
-    public Webtoon getWebtoon() {
-        return webtoon;
-    }
-
-    public void setWebtoon(Webtoon webtoon) {
-        this.webtoon = webtoon;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
-    }
-
-    public String getKeywordNm() {
-        return keywordNm;
-    }
-
-    public void setKeywordNm(String keywordNm) {
-        this.keywordNm = keywordNm;
-    }
 }

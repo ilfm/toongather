@@ -2,10 +2,12 @@ package com.toongather.toongather.domain.webtoon.domain;
 
 import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.global.common.BaseEntity;
+import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+@Getter
 @Table(name="WEBTOON_GENRE_KEYWORD")
 @Entity
 public class WebtoonGenreKeyword extends BaseEntity {
@@ -25,27 +27,4 @@ public class WebtoonGenreKeyword extends BaseEntity {
     @JoinColumn(name="genreKeywordId",foreignKey = @ForeignKey(name = "fk_toongenrekeword_to_genrekeyword"))
     private GenreKeyword genreKeyword;
 
-    public String getWebtoonGenreKeywordId() {
-        return webtoonGenreKeywordId;
-    }
-
-    public void setWebtoonGenreKeywordId(String webtoonGenreKeywordId) {
-        this.webtoonGenreKeywordId = webtoonGenreKeywordId;
-    }
-
-    public Webtoon getWebtoon() {
-        return webtoon;
-    }
-
-    public void setWebtoon(Webtoon webtoon) {
-        this.webtoon = webtoon;
-    }
-
-    public GenreKeyword getGenreKeyword() {
-        return genreKeyword;
-    }
-
-    public void setGenreKeyword(GenreKeyword genreKeyword) {
-        this.genreKeyword = genreKeyword;
-    }
 }
