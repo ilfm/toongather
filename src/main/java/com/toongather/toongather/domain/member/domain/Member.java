@@ -1,13 +1,17 @@
 package com.toongather.toongather.domain.member.domain;
 
 import com.toongather.toongather.SeqGenerator;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,6 +49,20 @@ public class Member implements UserDetails {
 
     @Column
     private String imgPath;
+    @Column(name = "CRT")
+    private String crt;
+
+    @Column(name = "CRT_EXPIRED")
+    private LocalDateTime crtExpired;
+
+    @Column(name = "LAST_LOGIN")
+    private LocalDateTime lastLogin;
+
+    @Column(name = "JOIN_TYPE")
+    private String joinType;
+
+    @Column(name = "REFRESH_TOKEN")
+    private String refreshToken;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<MebmerRole> memberRoles  = new ArrayList<>();
@@ -58,13 +76,16 @@ public class Member implements UserDetails {
         this.password = password;
     }
 
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         List<SimpleGrantedAuthority> collect = memberRoles.stream().map(entity -> new SimpleGrantedAuthority(entity.getRole().getName()))
                 .collect(Collectors.toList());
 
-       System.out.println(collect);
 
         return collect;
     }

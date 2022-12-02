@@ -3,6 +3,9 @@ package com.toongather.toongather.global.security.jwt;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +29,8 @@ public class JwtTokenProvider {
 
     //토큰시간 (default 30분)
     private Long tokenValidTime = 30 * 60 * 1000L;
+    //리프레시 토큰(default 2주)
+    private Long refreshValidTime =  14 * 24 * 60 * 60 * 1000l;
 
     private final UserDetailsService userDetailsService;
 
@@ -48,6 +55,18 @@ public class JwtTokenProvider {
 
     }
 
+    public String createRefreshToken(Long userPk) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userPk));
+        Date now = new Date();
+
+        return Jwts.builder()
+          .setClaims(claims)
+          .setIssuedAt(now)
+          .setExpiration(new Date(now.getTime() + refreshValidTime))
+          .signWith(SignatureAlgorithm.HS256, secretKey)
+          .compact();
+    }
+
     //토큰에서 인증정보를 조회
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
@@ -60,27 +79,23 @@ public class JwtTokenProvider {
     }
 
     //request header에서 토큰값 가져옴 "Authoriztion" : "token값"
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("Authorization");
+    public JwtToken resolveToken(HttpServletRequest request) {
+        return  JwtToken.builder()
+          .accessToken(request.getHeader("AT_TOKEN"))
+          .refreshToken(request.getHeader("RT_TOKEN")).build();
     }
 
     //토큰 유효성 + 만료일자 확인
-    public boolean validateToken(String jwtToken) {
+    public JwtCode validateToken(String jwtToken) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-            return !claims.getBody().getExpiration().before(new Date());
-        }catch (MalformedJwtException e) {
-            log.warn("잘못된 jwt 서명");
-            return false;
+            return JwtCode.ACCESS;
+        }catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e ) {
+            log.warn(JwtCode.DENIED.getMessage());
+            return JwtCode.DENIED;
         }catch (ExpiredJwtException e) {
-            log.warn("만료된 jwt 토큰");
-            return false;
-        }catch (UnsupportedJwtException e) {
-            log.warn("지원되지 않는 jwt 토큰");
-            return false;
-        }catch (IllegalArgumentException e) {
-            log.warn("잘못된 토큰");
-            return false;
+            log.warn(JwtCode.EXPIRED.getMessage());
+            return JwtCode.EXPIRED;
         }
     }
 

@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -35,9 +34,10 @@ public class Role {
 
     @Builder
     public Role (String name) {
-        this.id = 1;
         this.name = name;
     }
+
+
 
 
 }

@@ -32,7 +32,8 @@ public class MebmerRole {
     @JoinColumn(name = "ROLE_ID",foreignKey = @ForeignKey(name = "fk_memberrole_to_role"))
     private Role role;
 
-    @Builder MebmerRole(Member member, Role role) {
+    @Builder
+    public MebmerRole(Member member, Role role) {
         this.member = member;
         this.role = role;
     }
