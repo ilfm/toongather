@@ -27,7 +27,7 @@ public class Webtoon extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 65532)
     private String summary;
 
     @Column(nullable = false)
