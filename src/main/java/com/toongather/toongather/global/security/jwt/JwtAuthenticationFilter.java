@@ -61,5 +61,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             }
             chain.doFilter(request, response);
         }
+
+        chain.doFilter(request, response);
     }
 }
