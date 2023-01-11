@@ -3,6 +3,7 @@ package com.toongather.toongather.domain.webtoon.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.global.common.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,6 +18,17 @@ public class Webtoon extends BaseEntity {
     public Webtoon() {
 
     }
+
+    @Builder
+    public Webtoon(String title, String summary, String writerNm, String age, String endFlag, String imgPath) {
+        this.title = title;
+        this.summary = summary;
+        this.writerNm = writerNm;
+        this.age = age;
+        this.endFlag = endFlag;
+        this.imgPath = imgPath;
+    }
+
     @Id
     @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
             parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_SEQ"),
