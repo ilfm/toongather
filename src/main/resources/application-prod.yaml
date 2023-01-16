@@ -1,3 +1,7 @@
+#
+#    Maria DB
+#
+
 spring:
   config:
     activate:
@@ -19,6 +23,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
 
 
+file:
+  dir: /tmp
