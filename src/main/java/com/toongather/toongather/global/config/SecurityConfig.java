@@ -4,9 +4,13 @@ import com.toongather.toongather.global.security.jwt.JwtAccessDeniedHandler;
 import com.toongather.toongather.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.toongather.toongather.global.security.jwt.JwtAuthenticationFilter;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
+import com.toongather.toongather.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.toongather.toongather.global.security.oauth2.UserOAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.domain.AuditorAware;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -19,54 +23,91 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+@Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity // 기본적인 웹보안 활성화
 @EnableGlobalMethodSecurity(prePostEnabled = true) //@preAuthorize 어노테이션 메소드단위로 추가하기위함
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final CorsFilter corsFilter;
+  private final JwtTokenProvider jwtTokenProvider;
+  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+  private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+  private final CorsFilter corsFilter;
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+  private final UserOAuth2Service userOAuth2Service;
 
-    @Bean
-    public WebSecurityCustomizer configure() {
+  private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-        //url 제외 패턴
-        return (web) -> web.ignoring().mvcMatchers(
-            "/api/v1/ignore"
-        );
-    }
+  private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    @Bean
-    public BCryptPasswordEncoder encodePwd() {
-        return new BCryptPasswordEncoder();
-    }
+  private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf().disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
-                .and()
-                .formLogin().disable()
-                .httpBasic().disable()
-                .authorizeRequests()
-                .antMatchers("/**", "/auth/**").permitAll()
-                .antMatchers("/test").authenticated()
-                .and()
-                .addFilter(corsFilter)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().build();
-    }
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
+
+  @Bean
+  public WebSecurityCustomizer configure() {
+
+    //url 제외 패턴
+    return (web) -> web.ignoring().mvcMatchers(
+      "/api/v1/ignore"
+    );
+  }
+
+  @Bean
+  public BCryptPasswordEncoder encodePwd() {
+    return new BCryptPasswordEncoder();
+  }
+
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+      http
+      .cors()
+        .and()
+      .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+      .csrf()
+        .disable()
+      .formLogin()
+        .disable()
+      .httpBasic()
+        .disable()
+      .exceptionHandling()
+        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        .accessDeniedHandler(jwtAccessDeniedHandler)
+        .and()
+      .authorizeRequests()
+        .antMatchers("/**", "/oauth2/**", "/login/**")
+          .permitAll()
+        .antMatchers("/test")
+          .authenticated()
+        .and()
+      .oauth2Login()
+        .authorizationEndpoint()
+          .baseUri("/oauth2/authorize")
+          .authorizationRequestRepository(authorizationRequestRepository)
+          .and()
+        .redirectionEndpoint()
+          .baseUri("/oauth2/callback/*")
+          .and()
+        .userInfoEndpoint()
+          .userService(userOAuth2Service)
+          .and()
+        .successHandler(oAuth2AuthenticationSuccessHandler)
+        .failureHandler(oAuth2AuthenticationFailureHandler);
+
+      http.addFilter(corsFilter)
+      .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+
+      return http.build();
+
+  }
+
 
 
 
