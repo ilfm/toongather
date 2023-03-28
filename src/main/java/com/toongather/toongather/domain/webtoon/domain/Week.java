@@ -25,7 +25,7 @@ public class Week extends BaseEntity {
     @Column(nullable = false)
     private String weekNm;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="toonId",foreignKey = @ForeignKey(name = "fk_week_to_toon"))
     private Webtoon webtoon;
 

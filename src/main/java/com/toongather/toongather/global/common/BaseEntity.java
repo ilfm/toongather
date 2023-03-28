@@ -3,6 +3,7 @@ package com.toongather.toongather.global.common;
 
 import lombok.Getter;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,9 +26,11 @@ public abstract class BaseEntity {
     @Column
     private String amdDt;
 
-    @Column
+    @CreatedBy
+    @Column(updatable = false)
     private String regUserId;
 
+    @LastModifiedBy
     @Column
     private String amdUserId;
 
