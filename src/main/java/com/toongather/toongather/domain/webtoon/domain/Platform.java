@@ -20,25 +20,26 @@ import java.time.LocalDateTime;
 @Table(name = "PLATFORM")
 public class Platform extends BaseEntity {
 
-    public Platform() {
+  public Platform() {
 
-    }
+  }
 
-    @Id
-    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-                      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="PLATFORM_SEQ"),
-                                   @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="PF")} )
-    @GeneratedValue(generator = "seqGenerator")
-    private String platformId;
+  @Id
+  @GenericGenerator(name = "seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+      parameters = {
+          @org.hibernate.annotations.Parameter(name = SeqGenerator.SEQ_NAME, value = "PLATFORM_SEQ"),
+          @org.hibernate.annotations.Parameter(name = SeqGenerator.PREFIX, value = "PF")})
+  @GeneratedValue(generator = "seqGenerator")
+  private String platformId;
 
-    @Column(nullable = false)
-    private String platformNm;
+  @Column(nullable = false)
+  private String platformNm;
 
-    @Column(nullable = false)
-    private String regUserId;
+  @Column(nullable = false)
+  private String regUserId;
 
-    @Column(nullable = false)
-    private String amdUserId;
+  @Column(nullable = false)
+  private String amdUserId;
 
 
 }

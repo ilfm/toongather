@@ -2,6 +2,7 @@ package com.toongather.toongather.domain.review.service;
 
 
 import com.toongather.toongather.domain.review.domain.Review;
+import com.toongather.toongather.domain.review.dto.ReviewDto;
 import com.toongather.toongather.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,14 @@ import java.util.List;
 public class ReviewService {
 
     @Autowired
-    private ReviewRepository reviewRepository;
-    
+    private  ReviewRepository reviewRepository;
+
+    /**
+     * 리뷰 생성
+     * */
+    public void createReview(){}
+
+
     /**
      * 리뷰 등록
      * */
@@ -36,7 +43,15 @@ public class ReviewService {
     /**
      *  전체 리뷰 조회
      * */
-    public List<Review> findAllReview(){
-        return reviewRepository.findAll();
+    public List<ReviewDto> findAllReview(){
+
+        List<ReviewDto> allReview = reviewRepository.findAll();
+        allReview.forEach((v)->{
+            System.out.println("v.getStar() = " + v.getStar());
+            System.out.println("v.getRecommendComment() = " + v.getRecommendComment());
+            //System.out.println("v.getMember() = " + v.getMember());
+            //System.out.println("v.getWebtoon() = " + v.getWebtoon());
+        });
+        return allReview;
     }
 }

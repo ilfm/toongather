@@ -19,11 +19,11 @@ public class WebtoonGenreKeyword extends BaseEntity {
     @GeneratedValue(generator = "seqGenerator")
     private String webtoonGenreKeywordId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="toonId",foreignKey = @ForeignKey(name = "fk_toongenrekeword_to_toon"))
     private Webtoon webtoon;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="genreKeywordId",foreignKey = @ForeignKey(name = "fk_toongenrekeword_to_genrekeyword"))
     private GenreKeyword genreKeyword;
 
