@@ -1,117 +1,150 @@
 package com.toongather.toongather.domain.member.domain;
 
-import com.toongather.toongather.SeqGenerator;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "MEMBER")
 @Entity
 @Getter
+@SequenceGenerator(
+    name = "MEMBER_SEQ_GEN",
+    sequenceName = "MEMBER_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
 public class Member implements UserDetails {
 
-    @Id
-    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="REVIEW_SEQ"),
-                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="MB")} )
-    @GeneratedValue(generator = "seqGenerator")
-    @Column(name = "MEMBER_NO")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE,
+      generator = "MEMBER_SEQ_GEN")
+  @Column(name = "MEMBER_NO")
+  private Long id;
 
-    @Column(name = "PASSWORD")
-    private String password;
+  @Column(name = "PASSWORD")
+  private String password;
 
-    @Column(name = "EMAIL")
-    private String email;
+  @Column(name = "EMAIL")
+  private String email;
 
-    @Column(name = "NAME")
-    private String name;
+  @Column(name = "NAME")
+  private String name;
 
-    @Column(name = "PHONE")
-    private String phone;
+  @Column(name = "PHONE")
+  private String phone;
 
-    @Column(name = "NICKNAME")
-    private String nickName;
+  @Column(name = "NICKNAME")
+  private String nickName;
 
-    @Column
-    private String imgPath;
-    @Column(name = "CRT")
-    private String crt;
+  @Column(name = "IMG_PATH")
+  private String imgPath;
 
-    @Column(name = "CRT_EXPIRED")
-    private LocalDateTime crtExpired;
+  @Column(name = "CRT")
+  private String crt;
 
-    @Column(name = "LAST_LOGIN")
-    private LocalDateTime lastLogin;
+  @Column(name = "CRT_EXPIRED")
+  private LocalDateTime crtExpired;
 
-    @Column(name = "JOIN_TYPE")
-    private String joinType;
+  @Column(name = "LAST_LOGIN")
+  private LocalDateTime lastLogin;
 
-    @Column(name = "REFRESH_TOKEN")
-    private String refreshToken;
+  @Column(name = "JOIN_TYPE")
+  @Enumerated(EnumType.STRING)
+  private JoinType joinType;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
-    private List<MebmerRole> memberRoles  = new ArrayList<>();
+  @Column(name = "REFRESH_TOKEN")
+  private String refreshToken;
 
-    @Builder
-    public Member(String name, String password) {
-        this.name = name;
-        this.email = "aaa@test.co.kr";
-        this.phone = "010-000-0000";
-        this.nickName = "test";
-        this.password = password;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        List<SimpleGrantedAuthority> collect = memberRoles.stream().map(entity -> new SimpleGrantedAuthority(entity.getRole().getName()))
-                .collect(Collectors.toList());
+  @OneToMany(mappedBy = "member")
+  private List<MemberRole> memberRoles = new ArrayList<>();
 
 
-        return collect;
-    }
+  //생성자
+  @Builder
+  public Member(String name, String password, String email, String phone, String nickName) {
+    this.name = name;
+    this.email = email;
+    this.phone = phone;
+    this.nickName = nickName;
+    this.password = password;
 
-    @Override
-    public String getUsername() {
-        return null;
-    }
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
+  @Builder(builderMethodName = "OAuthBuilder", builderClassName = "OAuthBuilder")
+  public Member(String name, String email, String nickName, JoinType joinType) {
+    this.name = name;
+    this.email = email;
+    this.nickName = nickName;
+    this.joinType = joinType;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
+  //비즈니스로직
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
+  public void addMemberRoles(Role role) {
+    MemberRole memberRole = MemberRole.builder().role(role).member(this).build();
+    memberRoles.add(memberRole);
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
+  public void regLastLoginHistory() {
+    this.lastLogin = LocalDateTime.now();
+  }
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+
+    List<SimpleGrantedAuthority> collect = memberRoles.stream()
+        .map(entity -> new SimpleGrantedAuthority(entity.getRole().getName().name()))
+        .collect(Collectors.toList());
+
+    return collect;
+  }
+
+  @Override
+  public String getUsername() {
+    return null;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return false;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return false;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return false;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return false;
+  }
 }
