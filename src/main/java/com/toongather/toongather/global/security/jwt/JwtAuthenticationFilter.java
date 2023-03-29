@@ -33,18 +33,16 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         JwtToken token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
 
 
-        //note 1. access token이 유효한지 확인
+        //note 로그인시, access token과 refresh token이 발급되며 이후 access token만 api가 요청하게 된다.
+        // 1. api 요청시 access token이 유효한지 확인
         // -> 1) 만료 됐을 경우 refresh token 보낼것을 요청, 2) 승인됐을 경우 권한정보 넣어주기
-        // 2. access token이 만료되어 refresh token을 보냈을 경우
+        // 2. access token이 만료되어 refresh token을 보냈을 경우, 이 경우에는 refresh token만 보낸다고 가정한다.
         // -> refresh token이 존재한다면 /api/v1/refesh 요청으로 가도록 한다.
-        if(token.getRefreshToken() != null) {
-            chain.doFilter(request, response);
-        }else if(token.getAccessToken() != null) {
+        if(token.getAccessToken() != null && token.getRefreshToken() == null) {
             //access token에 따른 검증
             switch (jwtTokenProvider.validateToken(token.getAccessToken())) {
                 case EXPIRED -> {
                     request.setAttribute("exception", CommonError.JWT_EXPIRED);
-
                     break;
                 }
                 case DENIED -> {
@@ -58,8 +56,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 }
             }
             chain.doFilter(request, response);
+        } else if(token.getRefreshToken() != null) {
+            chain.doFilter(request, response);
         }
-
         chain.doFilter(request, response);
     }
 }
