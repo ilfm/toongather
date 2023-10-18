@@ -28,7 +28,7 @@ public class GenreKeyword extends BaseEntity {
     private String genreKeywordNm;
 
     @Column(nullable = false)
-    private String Flag;
+    private String flag;
 
 }
 

@@ -20,35 +20,36 @@ public class Webtoon extends BaseEntity {
   }
 
   @Builder
-  public Webtoon(String title, String summary, String writerNm, String age, WebtoonStatus status,
-      String imgPath) {
+  public Webtoon(String toonId, String title, WebtoonStatus status, String imgPath,
+      Platform platform, Age age, String author) {
+    this.toonId = toonId;
     this.title = title;
-    this.summary = summary;
-    this.writerNm = writerNm;
-    this.age = age;
     this.status = status;
     this.imgPath = imgPath;
+    this.platform = platform;
+    this.age = age;
+    this.author = author;
   }
 
   @Id
-  @GenericGenerator(name = "seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-      parameters = {
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.SEQ_NAME, value = "WEBTOON_SEQ"),
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.PREFIX, value = "WT")})
+  @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_SEQ"),
+          @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WT")} )
   @GeneratedValue(generator = "seqGenerator")
   private String toonId;
 
   @Column(nullable = false)
   private String title;
 
-  @Column(nullable = false, length = 65532)
+  @Column(nullable = false)
+  private String author;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Age age;                // ALL, OVER15, OVER19
+
+  @Column(columnDefinition = "TEXT")
   private String summary;
-
-  @Column(nullable = false)
-  private String writerNm;
-
-  @Column(nullable = false)
-  private String age;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
@@ -57,13 +58,8 @@ public class Webtoon extends BaseEntity {
   @Column
   private String imgPath;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "platformId")
-  private Platform platform;
-
-  // 연관관계 메소드
-
-  // 생성 메소드
-
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Platform platform;      // NAVER, DAUM, LEZHIN, KAKAO
 
 }
