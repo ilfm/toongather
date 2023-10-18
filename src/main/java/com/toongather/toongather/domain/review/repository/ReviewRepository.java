@@ -4,9 +4,12 @@ package com.toongather.toongather.domain.review.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.toongather.toongather.domain.review.domain.QReview;
 import com.toongather.toongather.domain.review.domain.Review;
+import com.toongather.toongather.domain.review.domain.ReviewRecord;
 import com.toongather.toongather.domain.review.dto.QReviewDto;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
 import com.toongather.toongather.domain.webtoon.domain.QWebtoon;
+import javax.persistence.Tuple;
+import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -38,8 +41,10 @@ public class ReviewRepository {
                 r.reviewId,
                 r.webtoon.toonId,
                 w.title,
+                w.imgPath,
+                w.platform,
                 r.recommendComment,
-                r.record,
+                w.status,
                 r.star,
                 r.member.id
             )
@@ -65,17 +70,29 @@ public class ReviewRepository {
     }
   }
 
-  // 웹툰 리뷰 찾기
-  public Review findReview(Long memberNo, String toonId) {
+  // 리뷰 상세 찾기
+  public Review findReviewDetail(String reviewId) {
 
     QReview r = new QReview("r");
     Review review = jpaQueryFactory.select(r)
         .from(r)
-        .where(r.member.id.eq(memberNo)
-            .and(r.webtoon.toonId.eq(toonId)))
+        .where(r.reviewId.eq(reviewId))
         .fetchOne();
     return review;
   }
 
+  // 웹툰 리뷰 찾기
+  public Tuple findReview(String reviewId) {
 
+    QReview r = new QReview("r");
+    QWebtoon w = new QWebtoon("w");
+    Tuple review = (Tuple) jpaQueryFactory.select(r, r.webtoon)
+        .from(r)
+        .where(r.reviewId.eq(reviewId))
+        .fetchOne();
+
+    log.info(review.toString());
+
+    return review;
+  }
 }

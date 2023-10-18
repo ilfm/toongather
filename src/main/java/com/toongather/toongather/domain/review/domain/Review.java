@@ -6,6 +6,8 @@ import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.global.common.BaseEntity;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,15 +41,14 @@ public class Review extends BaseEntity {
   @JoinColumn(name = "MEMBER_NO", foreignKey = @ForeignKey(name = "fk_review_to_member"))
   private Member member;
 
-  @Column(nullable = false)
+  @Column
   private String recommendComment;
 
-  @Column(nullable = false)
-  private String record;
-
-  @Column(nullable = false)
+  @Column
   private Long star;
 
+  @OneToMany(mappedBy = "review")
+  private List<ReviewRecord> records = new ArrayList<>();
 
   /* 연관관계 편의 메소드 */
   public void setMember(Member member){
@@ -62,7 +63,6 @@ public class Review extends BaseEntity {
   public static Review createReview(Member member, Webtoon webtoon, ReviewDto reviewData){
     Review review = new Review();
 
-    review.setRecord(reviewData.getRecord());
     review.setRecommendComment(reviewData.getRecommendComment());
     review.setStar(reviewData.getStar());
     review.setMember(member);
@@ -76,11 +76,7 @@ public class Review extends BaseEntity {
     this.webtoon = toon;
     this.member = member;
     this.recommendComment = recomandComment;
-    this.record = record;
     this.star = star;
   }
-
-
-
 
 }
