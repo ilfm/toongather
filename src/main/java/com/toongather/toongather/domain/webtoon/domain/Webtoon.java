@@ -12,48 +12,54 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name="WEBTOON")
+@Table(name = "WEBTOON")
 public class Webtoon extends BaseEntity {
 
-    public Webtoon() {
+  public Webtoon() {
 
-    }
+  }
 
-    @Builder
-    public Webtoon(String title, String summary, String writerNm, String age, String endFlag, String imgPath) {
-        this.title = title;
-        this.summary = summary;
-        this.writerNm = writerNm;
-        this.age = age;
-        this.endFlag = endFlag;
-        this.imgPath = imgPath;
-    }
+  @Builder
+  public Webtoon(String toonId, String title, WebtoonStatus status, String imgPath,
+      Platform platform, Age age, String author) {
+    this.toonId = toonId;
+    this.title = title;
+    this.status = status;
+    this.imgPath = imgPath;
+    this.platform = platform;
+    this.age = age;
+    this.author = author;
+  }
 
-    @Id
-    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_SEQ"),
-                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WT")} )
-    @GeneratedValue(generator = "seqGenerator")
-    private String toonId;
+  @Id
+  @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_SEQ"),
+          @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WT")} )
+  @GeneratedValue(generator = "seqGenerator")
+  private String toonId;
 
-    @Column(nullable = false)
-    private String title;
+  @Column(nullable = false)
+  private String title;
 
-    @Column(nullable = false, length = 65532)
-    private String summary;
+  @Column(nullable = false)
+  private String author;
 
-    @Column(nullable = false)
-    private String writerNm;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Age age;                // ALL, OVER15, OVER19
 
-    @Column(nullable = false)
-    private String age;
+  @Column(columnDefinition = "TEXT")
+  private String summary;
 
-    @Column(nullable = false)
-    private String endFlag;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private WebtoonStatus status;   // END, STOP, ING
 
-    @Column
-    private String imgPath;
+  @Column
+  private String imgPath;
 
-
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Platform platform;      // NAVER, DAUM, LEZHIN, KAKAO
 
 }
