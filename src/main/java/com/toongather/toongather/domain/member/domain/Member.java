@@ -1,5 +1,6 @@
 package com.toongather.toongather.domain.member.domain;
 
+import com.toongather.toongather.global.common.BaseTimeEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
     initialValue = 1,
     allocationSize = 1
 )
-public class Member implements UserDetails {
+public class Member extends BaseTimeEntity implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE,
@@ -88,7 +89,7 @@ public class Member implements UserDetails {
     this.phone = phone;
     this.nickName = nickName;
     this.password = password;
-
+    this.joinType = JoinType.NORMAL;
   }
 
   @Builder(builderMethodName = "OAuthBuilder", builderClassName = "OAuthBuilder")

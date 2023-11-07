@@ -52,7 +52,7 @@ public class SecurityConfig {
   public WebSecurityCustomizer configure() {
 
     //url 제외 패턴
-    return (web) -> web.ignoring().mvcMatchers(
+    return web -> web.ignoring().mvcMatchers(
       "/api/v1/ignore"
     );
   }
@@ -81,21 +81,23 @@ public class SecurityConfig {
         .accessDeniedHandler(jwtAccessDeniedHandler)
         .and()
       .authorizeRequests()
-        .antMatchers("/**", "/member/join", "/member/login", "/oauth2/**")
+        .antMatchers("/member/join", "/member/login", "/oauth2/**")
           .permitAll()
         .antMatchers("/member/user")
           .authenticated()
+        .antMatchers("/**")
+          .permitAll()
         .and()
       .oauth2Login()
         .authorizationEndpoint()
           .baseUri("/oauth2/authorize")
           .authorizationRequestRepository(authorizationRequestRepository)
           .and()
+          .userInfoEndpoint()
+          .userService(userOAuth2Service)
+          .and()
         .redirectionEndpoint()
           .baseUri("/oauth2/callback/*")
-          .and()
-        .userInfoEndpoint()
-          .userService(userOAuth2Service)
           .and()
         .successHandler(oAuth2AuthenticationSuccessHandler)
         .failureHandler(oAuth2AuthenticationFailureHandler);
@@ -107,8 +109,6 @@ public class SecurityConfig {
       return http.build();
 
   }
-
-
 
 
 }

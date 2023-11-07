@@ -1,18 +1,17 @@
 package com.toongather.toongather.domain.member.api;
 
 import com.toongather.toongather.domain.member.domain.Member;
-import com.toongather.toongather.domain.member.repository.MemberRepository;
+import com.toongather.toongather.domain.member.service.AuthService;
+import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.security.jwt.JwtToken;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import java.util.Map;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthApi {
 
   private final JwtTokenProvider jwtTokenProvider;
-  private final MemberRepository memberRepository;
+  private final MemberService memberService;
+  private final AuthService authService;
 
   /**
    * note access token이 만료됨에따라, refresh token을 확인하여 검증
@@ -49,17 +49,10 @@ public class AuthApi {
       case EXPIRED :
         return new ResponseEntity("login need", HttpStatus.UNAUTHORIZED);
       case ACCESS :
-        Long memberId = Long.valueOf(user.get("id"));
-        Member member = Optional.ofNullable(memberRepository.findOne(Long.valueOf(memberId)))
-          .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-
+        Member member = memberService.findMember(Long.valueOf(user.get("id")));
         //access token 발급
         if(member.getRefreshToken().equals(tokens.getRefreshToken())) {
-          String token = jwtTokenProvider.createToken(member.getId(), member.getMemberRoles());
-
-          HttpHeaders httpHeaders = new HttpHeaders();
-          httpHeaders.add("Authorization", "Bearer " + token);
-
+          HttpHeaders httpHeaders = authService.setAccessTokenHeader(member);
           return new ResponseEntity<>("success", httpHeaders, HttpStatus.OK);
         }
         break;

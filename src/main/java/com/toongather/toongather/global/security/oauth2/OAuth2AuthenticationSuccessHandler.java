@@ -1,6 +1,5 @@
 package com.toongather.toongather.global.security.oauth2;
 
-import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
   private final JwtTokenProvider jwtTokenProvider;
-  private final MemberRepository memberRepository;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

@@ -3,14 +3,12 @@ package com.toongather.toongather.global.security.oauth2;
 
 import com.toongather.toongather.domain.member.domain.JoinType;
 import com.toongather.toongather.domain.member.domain.Member;
-import com.toongather.toongather.domain.member.domain.MemberRole;
 import com.toongather.toongather.domain.member.domain.Role;
 import com.toongather.toongather.domain.member.domain.RoleType;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
+import com.toongather.toongather.domain.member.repository.MemberRoleRepository;
 import com.toongather.toongather.domain.member.repository.RoleRepository;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +28,7 @@ public class UserOAuth2Service extends DefaultOAuth2UserService {
 
   private final MemberRepository memberRepository;
   private final RoleRepository roleRepository;
-
+  private final MemberRoleRepository memberRoleRepository;
 
   @Override
   @Transactional
@@ -41,17 +39,13 @@ public class UserOAuth2Service extends DefaultOAuth2UserService {
 
     //이미 존재하는 email인 경우 로그인, 아닌경우 회원가입 로직
     Member member = makeUserByOAuthUser(oAuth2User.getAttributes(), registrationId);
-    if (memberRepository.getJoinedMember(member.getEmail()) == null) {
-      memberRepository.save(member);
-      //role_user 추가
-      Role role = roleRepository.findRoleByName(RoleType.ROLE_USER);
-      List<MemberRole> memberRoles = new ArrayList<>();
-      MemberRole memberRole = MemberRole.builder().role(role).member(member).build();
-      memberRoles.add(memberRole);
+    Member findMember = memberRepository.findByEmail(member.getEmail());
+    if (findMember == null) {
+      Role role = roleRepository.findByName(RoleType.ROLE_USER);
       member.addMemberRoles(role);
-      roleRepository.saveMemberRoles(memberRoles);
+      memberRepository.save(member);
+      memberRoleRepository.saveAll(member.getMemberRoles());
     }
-
     return new DefaultOAuth2User(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")),
         oAuth2User.getAttributes(),
         userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint()

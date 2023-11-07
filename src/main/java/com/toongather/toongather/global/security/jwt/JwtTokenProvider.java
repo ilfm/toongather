@@ -32,7 +32,7 @@ public class JwtTokenProvider {
     //토큰시간 (default 30분)
     private Long tokenValidTime = 30 * 60 * 1000L;
     //리프레시 토큰(default 2주)
-    private Long refreshValidTime =  14 * 24 * 60 * 60 * 1000l;
+    private Long refreshValidTime =  14 * 24 * 60 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 
@@ -79,6 +79,7 @@ public class JwtTokenProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
+
 
     //토큰에서 회원정보 추출
     public String getUserPk(String token) {
