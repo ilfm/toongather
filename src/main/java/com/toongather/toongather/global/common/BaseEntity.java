@@ -20,10 +20,11 @@ import java.time.format.DateTimeFormatter;
 @Getter
 public abstract class BaseEntity extends BaseTimeEntity {
 
-    @Column
     @CreatedBy
+    @Column(updatable = false)
     private String regUserId;
 
+    @LastModifiedBy
     @Column
     @LastModifiedBy
     private String amdUserId;
