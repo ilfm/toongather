@@ -2,12 +2,15 @@ spring:
   profiles:
     default: local
     active: local
+    include:
+      - oauth2
 
   jpa:
     properties:
       hibernate:
         format_sql: true
         physical_naming_strategy: com.toongather.toongather.global.config.UpperCaseNamingStrategy
+        default_batch_fetch_size : 100
 
 logging.level:
   org.hibernate.SQL: debug
