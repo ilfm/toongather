@@ -30,12 +30,11 @@ public class Webtoon extends BaseEntity {
     this.age = age;
     this.author = author;
   }
-
+  /*
+  * 웹툰 api 사용하기로 함
+  * */
   @Id
-  @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_SEQ"),
-          @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WT")} )
-  @GeneratedValue(generator = "seqGenerator")
+  @Column(nullable = false)
   private String toonId;
 
   @Column(nullable = false)

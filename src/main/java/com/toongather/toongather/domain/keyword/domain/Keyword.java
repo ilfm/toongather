@@ -6,18 +6,21 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
+@Builder
 @Getter
 @Table(name = "KEYWORD")
 @Entity
 public class Keyword {
 
   @Id
-  @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-      parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="KEYWORD_SEQ"),
-          @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="KE")} )
+  @GenericGenerator(name = "seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
+      parameters = {
+          @org.hibernate.annotations.Parameter(name = SeqGenerator.SEQ_NAME, value = "KEYWORD_SEQ"),
+          @org.hibernate.annotations.Parameter(name = SeqGenerator.PREFIX, value = "KE")})
   @GeneratedValue(generator = "seqGenerator")
   private String keywordId;
 

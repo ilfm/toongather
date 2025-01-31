@@ -6,6 +6,7 @@ import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.global.common.BaseEntity;
+import com.toongather.toongather.global.common.util.file.File;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -49,6 +50,10 @@ public class Review extends BaseEntity {
 
   @OneToMany(mappedBy = "review")
   private List<ReviewRecord> records = new ArrayList<>();
+
+  @OneToMany(mappedBy = "review")
+  private List<ReviewKeyword> keywords = new ArrayList<>();
+
 
   /* 연관관계 편의 메소드 */
   public void setMember(Member member){

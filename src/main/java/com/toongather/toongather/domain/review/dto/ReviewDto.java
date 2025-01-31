@@ -26,11 +26,11 @@ public class ReviewDto {
   private WebtoonDto webtoon;
 
   @QueryProjection
-  public ReviewDto(String reviewId, String toonId, String title, String imgPath, Platform platform,
+  public ReviewDto(String reviewId, String toonId, String title,String author,String summary, String imgPath, Platform platform,
       String recommendComment, WebtoonStatus status, Long star, Long memberNo) {
 
     this.reviewId = reviewId;
-    this.webtoon = WebtoonDto.builder().toonId(toonId).title(title).platform(platform)
+    this.webtoon = WebtoonDto.builder().toonId(toonId).title(title).author(author).summary(summary).platform(platform)
         .imgPath(imgPath).status(status).build();
     this.recommendComment = recommendComment;
     this.star = star;
