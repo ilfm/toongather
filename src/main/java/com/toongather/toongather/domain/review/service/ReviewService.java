@@ -7,23 +7,20 @@ import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.domain.ReviewKeyword;
 import com.toongather.toongather.domain.review.domain.ReviewRecord;
 import com.toongather.toongather.domain.review.dto.CreateReviewRecordRequest;
-import com.toongather.toongather.domain.review.dto.ReviewDto;
+import com.toongather.toongather.domain.review.dto.ReviewSearchDto;
 import com.toongather.toongather.domain.review.dto.ReviewKeywordDto;
 import com.toongather.toongather.domain.review.dto.ReviewRecordDto;
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
+import com.toongather.toongather.domain.review.repository.ReviewJpaRepository;
 import com.toongather.toongather.domain.review.repository.ReviewKeywordRepository;
 import com.toongather.toongather.domain.review.repository.ReviewRecordRepository;
 import com.toongather.toongather.domain.review.repository.ReviewRepository;
-import com.toongather.toongather.global.common.util.file.File;
-import com.toongather.toongather.global.common.util.file.FileFlag;
 import com.toongather.toongather.global.common.util.file.FileStore;
 import com.toongather.toongather.global.common.util.file.UploadFile;
-import com.toongather.toongather.global.common.util.file.service.FileService;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +34,7 @@ import java.util.List;
 public class ReviewService {
 
   @Autowired
-  private ReviewRepository reviewRepository;
+  private ReviewJpaRepository reviewRepository;
 
   @Autowired
   private ReviewRecordRepository reviewRecordRepository;
@@ -48,8 +45,8 @@ public class ReviewService {
   @Autowired
   private KeywordRepository keywordRepository;
 
-  @Autowired
-  private FileService fileService;
+  //@Autowired
+  //private FileService fileService;
 
   private final FileStore fileStore;
 
@@ -70,16 +67,16 @@ public class ReviewService {
   /**
    * 해당 리뷰 찾기
    */
-  public ReviewDto findOneReview(String reviewId) {
+  public ReviewSearchDto findOneReview(String reviewId) {
     return reviewRepository.findReview(reviewId);
   }
 
   /**
    * 전체 리뷰 조회
    */
-  public List<ReviewDto> findAllReview() {
+  public List<ReviewSearchDto> findAllReview() {
 
-    List<ReviewDto> allReview = reviewRepository.findAll();
+    List<ReviewSearchDto> allReview = reviewRepository.findAll();
     allReview.forEach((v) -> {
       System.out.println("v.getStar() = " + v.getStar());
       System.out.println("v.getRecommendComment() = " + v.getRecommendComment());
@@ -113,15 +110,15 @@ public class ReviewService {
       // 파일 업로드
       List<UploadFile> uploadFiles = fileStore.storeFiles(request.getFileList());
 
-      List<File> fileList = new ArrayList<>();
-      // 파일 정보 저장
-      for (UploadFile uploadFile : uploadFiles) {
-        fileList.add(File.builder().filePath(uploadFile.getFilePath())
-            .uploadFileName(uploadFile.getUploadFileName())
-            .storeFileName(uploadFile.getStoreFileName())
-            .flag(FileFlag.R).build());
-      }
-      fileService.saveFiles(fileList);
+//      List<File> fileList = new ArrayList<>();
+//      // 파일 정보 저장
+//      for (UploadFile uploadFile : uploadFiles) {
+//        fileList.add(File.builder().filePath(uploadFile.getFilePath())
+//            .uploadFileName(uploadFile.getUploadFileName())
+//            .storeFileName(uploadFile.getStoreFileName())
+//            .flag(FileFlag.R).build());
+//      }
+//      fileService.saveFiles(fileList);
 
       return ReviewRecordDto.builder().reviewRecordId(reviewRecord.getReviewRecordId())
           .record(reviewRecord.getRecord())

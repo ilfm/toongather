@@ -4,16 +4,14 @@ package com.toongather.toongather.domain.review.api;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.review.dto.CreateMyKeywordRequest;
 import com.toongather.toongather.domain.review.dto.CreateReviewRecordRequest;
-import com.toongather.toongather.domain.review.dto.ReviewDto;
+import com.toongather.toongather.domain.review.dto.ReviewSearchDto;
 import com.toongather.toongather.domain.review.dto.ReviewKeywordDto;
 import com.toongather.toongather.domain.review.dto.ReviewRecordDto;
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
 import com.toongather.toongather.domain.review.service.ReviewService;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,7 @@ public class ReviewController {
 
   // 마이리뷰 조회
   @PostMapping("/findAllReview")
-  public List<ReviewDto> findAllReview() {
+  public List<ReviewSearchDto> findAllReview() {
     return reviewService.findAllReview();
   }
 
@@ -107,8 +105,8 @@ public class ReviewController {
 
   // 리뷰 상세 가져오기
   @GetMapping("/{reviewId}")
-  public ResponseEntity<ReviewDto> getReviewDetail(@PathVariable String reviewId) {
-    ReviewDto review = reviewService.findOneReview(reviewId);
+  public ResponseEntity<ReviewSearchDto> getReviewDetail(@PathVariable String reviewId) {
+    ReviewSearchDto review = reviewService.findOneReview(reviewId);
     return new ResponseEntity<>(review, HttpStatus.OK);
   }
 

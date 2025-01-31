@@ -2,7 +2,7 @@ package com.toongather.toongather.domain.review.domain;
 
 import com.toongather.toongather.SeqGenerator;
 import com.toongather.toongather.global.common.BaseEntity;
-import com.toongather.toongather.global.common.util.file.File;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
