@@ -55,6 +55,7 @@ public class SeqGenerator implements IdentifierGenerator {
 
         String sql= null;
         String newSeq = "";
+        long newSeqForMember = 0L;
 
         // JDBC Connection
         Connection con = null;
@@ -64,7 +65,7 @@ public class SeqGenerator implements IdentifierGenerator {
             String dbDriverName = con.getMetaData().getDriverName();     // DB정보
 
             if(dbDriverName.contains("H2")){
-                sql = "SELECT "+this.seqName +".nextval from dual";        //H2
+                sql = "CALL NEXT VALUE FOR "+this.seqName;        //H2
             }else if(dbDriverName.contains("MariaDB")){
                 sql = "SELECT NEXTVAL(" +this.seqName +")";     // 마리아 디비
             }
@@ -72,7 +73,7 @@ public class SeqGenerator implements IdentifierGenerator {
             ResultSet rs = stmt.executeQuery(sql); // SQL를 실행
 
             if(rs.next()) {
-                newSeq = this.prefix +"-"+ rs.getString(1); // 결과값 추출
+                newSeq = this.prefix + "-" + rs.getString(1); // 결과값 추출
             }
         } catch (SQLException sqlException) {
             throw new HibernateException(sqlException);
@@ -86,7 +87,7 @@ public class SeqGenerator implements IdentifierGenerator {
                 }
             }
 
-            return newSeq;
+        return newSeq;
 
     }
 
