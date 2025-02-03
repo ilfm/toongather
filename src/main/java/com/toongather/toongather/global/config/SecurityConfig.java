@@ -91,7 +91,7 @@ public class SecurityConfig {
       .oauth2Login()
         .authorizationEndpoint()
           .baseUri("/oauth2/authorize")
-          .authorizationRequestRepository(authorizationRequestRepository)
+//          .authorizationRequestRepository(authorizationRequestRepository)
           .and()
           .userInfoEndpoint()
           .userService(userOAuth2Service)

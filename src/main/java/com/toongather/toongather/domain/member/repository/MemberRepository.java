@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-  Member findByEmail(String email);
-
+  Optional<Member> findByEmail(String email);
   @EntityGraph(attributePaths = {"memberRoles"})
   @Query("select m from Member m where m.id = :id")
   Optional<Member> findMemberWithRole(@Param("id") Long id);
 
+  Optional<Member> findByNameAndPhone(String name, String phone);
 }

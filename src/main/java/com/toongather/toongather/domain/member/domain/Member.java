@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "MEMBER")
 @Entity
-@Getter
+@Getter @Setter
 @SequenceGenerator(
     name = "MEMBER_SEQ_GEN",
     sequenceName = "MEMBER_SEQ",
@@ -61,11 +62,18 @@ public class Member extends BaseTimeEntity implements UserDetails {
   @Column(name = "IMG_PATH")
   private String imgPath;
 
-  @Column(name = "CRT")
-  private String crt;
+  @Column(name = "TEMP_CODE")
+  private String tempCode;
 
-  @Column(name = "CRT_EXPIRED")
-  private LocalDateTime crtExpired;
+  @Column(name = "TEMP_CODE_EXPIRED")
+  private LocalDateTime tempCodeExpired;
+
+  @Column(name = "USE_AT")
+  private Boolean useAt;
+
+  @Column(name ="MEMBER_TYPE")
+  @Enumerated(EnumType.STRING)
+  private MemberType memberType;
 
   @Column(name = "LAST_LOGIN")
   private LocalDateTime lastLogin;
@@ -90,6 +98,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     this.nickName = nickName;
     this.password = password;
     this.joinType = JoinType.NORMAL;
+    this.memberType = MemberType.TEMP;
   }
 
   @Builder(builderMethodName = "OAuthBuilder", builderClassName = "OAuthBuilder")
@@ -98,6 +107,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     this.email = email;
     this.nickName = nickName;
     this.joinType = joinType;
+    this.memberType = MemberType.ACTIVE;
   }
 
   //비즈니스로직
@@ -112,6 +122,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
   public void regLastLoginHistory() {
     this.lastLogin = LocalDateTime.now();
+  }
+
+  public void updateTempCode(String tempCode, LocalDateTime tempCodeExpired) {
+    this.tempCode = tempCode;
+    this.tempCodeExpired = tempCodeExpired;
   }
 
   @Override

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="kr">
+
+<body>
+<div style="margin:100px;">
+  <h1> TOONGATHER </h1>
+  <br>
+  <p> 아래 비밀번호로 초기화되었습니다. 해당 비밀번호로 로그인하여 비밀번호를 변경해주세요.</p>
+  <br>
+
+  <div align="center" style="border:1px solid black; font-family:verdana;">
+    <h3 style="color:blue"> 임시 비밀번호 </h3>
+    <div style="font-size:130%" th:text="${code}"> </div>
+  </div>
+  <br/>
+</div>
+
+</body>
