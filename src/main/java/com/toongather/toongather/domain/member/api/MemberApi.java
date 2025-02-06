@@ -32,16 +32,17 @@ public class MemberApi {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberService memberService;
-  private final PasswordEncoder passwordEncoder;
   private final AuthService authService;
 
   @PostMapping("/join")
   public ResponseEntity<ResponseDTO> join(@Valid @RequestBody JoinFormDTO dto) {
 
     Long id = memberService.join(dto);
+    log.info("id : {}", id);
 
     ResponseDTO response = ResponseDTO.builder()
         .message("success")
+        .code("200")
         .data(Map.of("id", id))
         .build();
 
