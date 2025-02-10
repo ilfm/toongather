@@ -2,7 +2,9 @@ package com.toongather.toongather;
 
 
 import com.toongather.toongather.domain.review.domain.Review;
-import com.toongather.toongather.domain.review.repository.ReviewRepository;
+import com.toongather.toongather.domain.review.repository.ReviewJpaRepository;
+import com.toongather.toongather.domain.webtoon.domain.Age;
+import com.toongather.toongather.domain.webtoon.domain.Platform;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.domain.webtoon.domain.WebtoonStatus;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
@@ -27,36 +29,17 @@ public class WebtoonRepositoryTest {
     @Test
     @Transactional
     @Rollback(false)
-    public void webtoonSave(){  // 웹툰 등록
+    public void 웹툰등록_테스트데이터넣기용(){
         System.out.println(" = ");
         Webtoon build = Webtoon.builder()
-                        .title("스터디그룹")
-                        .summary("")
-                        .writerNm("손제호")
+                        .toonId("1000000721433")
+                        .title("집이 없어")
+                        .age(Age.ALL)
+                        .author("와난")
                         .status(WebtoonStatus.ING)
-                        .age("12세이용가")
-                        .imgPath("/tmp").build();
-        // 사용자 등록자 자동넣기 해야함
+                        .platform(Platform.NAVER)
+                        .imgPath("https://image-comic.pstatic.net/webtoon/721433/thumbnail/thumbnail_IMAG21_c907f727-e522-4517-952e-398ea95d2efb.jpg").build();
+
         webtoonRepository.save(build);
     }
-
-    @Test
-    public void findToonById(){
-
-        Webtoon toon = webtoonRepository.findById("WT-4");
-        System.out.println("toon.getTitle() = " + toon.getTitle());
-    }
-
-    @Test
-    @Rollback(false)
-    public void testQuerydsl(){
-        List<Webtoon> toonList = webtoonRepository.findAll();
-
-        toonList.iterator().forEachRemaining((v)->{
-            System.out.println("title = " + v.getTitle());
-        });
-    }
-
-
-
 }
