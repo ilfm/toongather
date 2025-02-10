@@ -6,6 +6,7 @@ import com.toongather.toongather.domain.keyword.repository.KeywordRepository;
 import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.domain.ReviewKeyword;
 import com.toongather.toongather.domain.review.domain.ReviewRecord;
+import com.toongather.toongather.domain.review.domain.ReviewSortType;
 import com.toongather.toongather.domain.review.dto.CreateReviewRecordRequest;
 import com.toongather.toongather.domain.review.dto.ReviewSearchDto;
 import com.toongather.toongather.domain.review.dto.ReviewKeywordDto;
@@ -22,6 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -34,7 +40,10 @@ import java.util.List;
 public class ReviewService {
 
   @Autowired
-  private ReviewJpaRepository reviewRepository;
+  private ReviewJpaRepository reviewJpaRepository;
+
+  @Autowired
+  private ReviewRepository reviewRepository;
 
   @Autowired
   private ReviewRecordRepository reviewRecordRepository;
@@ -49,11 +58,51 @@ public class ReviewService {
   //private FileService fileService;
 
   private final FileStore fileStore;
+  private final int REVIEW_PAGE_SIZE = 10;
 
   /**
-   * 리뷰 생성
+   * 정렬 기준에 따라 리뷰 목록을 조회하는 메서드
+   *
+   * @param reviewSortType 정렬 기준 (STAR_ASC, STAR_DESC, CREATE_DATE_DESC 등)
+   * @param pageable 페이지네이션 정보 (페이지 번호, 크기 등)
+   * @return 정렬된 리뷰 목록 (페이지네이션 적용)
+   *
+   * @implNote
+   * - 정렬 기준이 null이면 기본값으로 최신 등록일순(CREATE_DATE_DESC)을 적용.
+   * - Pageable의 페이지 번호를 유지하면서, 지정된 REVIEW_PAGE_SIZE를 적용하여 페이지네이션 수행.
+   * - Review 엔티티를 ReviewSearchDto로 변환하여 반환.
    */
-  public void createReview() {
+  public Page<ReviewSearchDto> findAllWithSortType(ReviewSortType reviewSortType,Pageable pageable){
+
+    Sort sort;
+    if(reviewSortType == null){
+      sort = Sort.by(Direction.DESC, "regDt");
+    }else {
+      switch (reviewSortType) {
+        case STAR_DESC:
+          sort = Sort.by(Direction.DESC, "star");
+          break;
+        case STAR_ASC:
+          sort = Sort.by(Direction.ASC, "star");
+          break;
+        case CREATE_DATE_DESC:
+          sort = Sort.by(Direction.DESC, "regDt");
+          break;
+        default:
+          sort = Sort.by(Direction.DESC, "regDt");
+          break;
+      }
+    }
+    Pageable pageRequest = PageRequest.of(pageable.getPageNumber(),REVIEW_PAGE_SIZE,sort);   // TODO 페이지 추후변경
+
+    return reviewRepository.findAll(pageRequest)
+        .map(review -> ReviewSearchDto.builder()
+            .title(review.getWebtoon().getTitle())
+            .recommendComment(review.getRecommendComment())
+            .imgPath(review.getWebtoon().getImgPath())
+            .star(review.getStar())
+            .reviewDate(review.getRegDt())
+            .build());
   }
 
   /**
@@ -61,29 +110,14 @@ public class ReviewService {
    */
   @Transactional
   public void saveReview(Review review) {
-    reviewRepository.save(review);
+    reviewJpaRepository.save(review);
   }
 
   /**
    * 해당 리뷰 찾기
    */
   public ReviewSearchDto findOneReview(String reviewId) {
-    return reviewRepository.findReview(reviewId);
-  }
-
-  /**
-   * 전체 리뷰 조회
-   */
-  public List<ReviewSearchDto> findAllReview() {
-
-    List<ReviewSearchDto> allReview = reviewRepository.findAll();
-    allReview.forEach((v) -> {
-      System.out.println("v.getStar() = " + v.getStar());
-      System.out.println("v.getRecommendComment() = " + v.getRecommendComment());
-      //System.out.println("v.getMember() = " + v.getMember());
-      //System.out.println("v.getWebtoon() = " + v.getWebtoon());
-    });
-    return allReview;
+    return reviewJpaRepository.findReview(reviewId);
   }
 
   /**
@@ -94,7 +128,7 @@ public class ReviewService {
 
     System.out.println("request = " + request.getToonId());
     // 나의 기록 있는 리뷰 있는지 웹툰id로 확인
-    Review review = reviewRepository.findByToonId(request.getToonId());
+    Review review = reviewJpaRepository.findByToonId(request.getToonId());
 
     if (review.getReviewId() == null) {
 
@@ -164,7 +198,7 @@ public class ReviewService {
     // 키워드 불러오기
     Keyword keyword = keywordRepository.findByKeywordId(keywordId);
     // 리뷰 불러오기
-    Review review = reviewRepository.findById(reviewId);
+    Review review = reviewJpaRepository.findById(reviewId);
     // 리뷰 키워드 저장
     String reviewKeywordId = reviewKeywordRepository.save(
         ReviewKeyword.builder().keyword(keyword).review(review).build());
@@ -178,9 +212,9 @@ public class ReviewService {
    * */
   public void updateReview(UpdateReviewRequest request) {
 
-    Review review = reviewRepository.findById(request.getReviewId());
+    Review review = reviewJpaRepository.findById(request.getReviewId());
     review.setRecommendComment(request.getRecommendComment());
-    reviewRepository.save(review);
+    reviewJpaRepository.save(review);
   }
 
 }

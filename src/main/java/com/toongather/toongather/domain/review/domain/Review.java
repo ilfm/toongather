@@ -6,11 +6,13 @@ import com.toongather.toongather.domain.review.dto.ReviewSearchDto;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.global.common.BaseEntity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -75,10 +77,10 @@ public class Review extends BaseEntity {
   }
 
   @Builder
-  public Review(Webtoon toon, Member member, String recomandComment, Long star) {
+  public Review(Webtoon toon, Member member, String recommendComment, Long star) {
     this.webtoon = toon;
     this.member = member;
-    this.recommendComment = recomandComment;
+    this.recommendComment = recommendComment;
     this.star = star;
   }
 

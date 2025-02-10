@@ -22,9 +22,5 @@ public class ReviewSearchDto {
   private Long star;
   private String imgPath;           // 웹툰 썸네일 TO-DO 추후 변경
   private String recommendComment;
-  private LocalDateTime reviewDate;
-
-  
-
-
+  private String reviewDate;
 }

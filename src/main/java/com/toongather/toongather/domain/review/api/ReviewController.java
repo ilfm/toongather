@@ -2,6 +2,7 @@ package com.toongather.toongather.domain.review.api;
 
 
 import com.toongather.toongather.domain.member.repository.MemberRepository;
+import com.toongather.toongather.domain.review.domain.ReviewSortType;
 import com.toongather.toongather.domain.review.dto.CreateMyKeywordRequest;
 import com.toongather.toongather.domain.review.dto.CreateReviewRecordRequest;
 import com.toongather.toongather.domain.review.dto.ReviewSearchDto;
@@ -16,12 +17,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequestMapping("/review")
+@RequestMapping("/reviews")
 @RequiredArgsConstructor
 @RestController
 public class ReviewController {
@@ -36,10 +39,16 @@ public class ReviewController {
   @Value("${file.dir}")
   private String fileDir;
 
-  // 마이리뷰 조회
-  @PostMapping("/findAllReview")
-  public List<ReviewSearchDto> findAllReview() {
-    return reviewService.findAllReview();
+  /**
+   * 전체 리뷰 조회 API
+   *
+   * @param sort 정렬 기준 (STAR_ASC, STAR_DESC, CREATE_DATE_DESC 등)
+   * @param pageable 페이지네이션 정보
+   * @return 정렬된 리뷰 목록
+   */
+  @GetMapping
+  public Page<ReviewSearchDto> findAllWithSortType(@RequestParam(required = false, defaultValue = "CREATE_DATE_DESC") ReviewSortType sort,Pageable pageable) {
+    return reviewService.findAllWithSortType(sort,pageable);
   }
 
   // 나의 키워드 등록
