@@ -42,16 +42,11 @@ public class JwtTokenProvider {
     }
 
     //JWT 토큰 생성
-    public String createToken(Long userPk, List<MemberRole> roles) {
-
-        //권한 리스트 추출
-        List<String> memberRoles = roles.stream()
-            .map(target -> target.getRole().getName().name())
-            .collect(Collectors.toList());
+    public String createToken(Long userPk, List<String> roleNames) {
 
         //payload에 저장되는 정보단위, user 식별값
         Claims claims = Jwts.claims().setSubject(String.valueOf(userPk));
-        claims.put("roles", memberRoles);
+        claims.put("roles", roleNames);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)

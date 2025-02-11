@@ -1,10 +1,12 @@
 package com.toongather.toongather.domain.member.service;
 
 import com.toongather.toongather.domain.member.domain.Member;
+import com.toongather.toongather.domain.member.dto.MemberDTO;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +26,8 @@ public class AuthService {
    */
   @Transactional
   public void updateTokenAndLoginHistoryById(Long id, String refreshToken) {
-    Member member = memberRepository.findById(id).get();
+    Member member = memberRepository.findById(id)
+        .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
     member.setRefreshToken(refreshToken);
     member.regLastLoginHistory();
 
@@ -35,10 +38,10 @@ public class AuthService {
    * @param member
    * @return
    */
-  public HttpHeaders setAccessTokenHeader(Member member) {
+  public HttpHeaders setAccessTokenHeader(MemberDTO member) {
 
     //accessToken 생성
-    String token = jwtTokenProvider.createToken(member.getId(), member.getMemberRoles());
+    String token = jwtTokenProvider.createToken(member.getId(), member.getRoleNames());
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.add("Authorization", "Bearer " + token);
 

@@ -66,7 +66,6 @@ dependencies {
 		exclude group: "org.hamcrest", module: "hamcrest-core"
 	}
 
-
 }
 
 test {
