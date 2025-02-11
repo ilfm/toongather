@@ -10,11 +10,13 @@ import lombok.Data;
 @Data
 public class UploadFile {
 
-    private String uploadFileName;  // 사용자가 업로드한 파일명
-    private String storeFileName;   //  서버내부에서 관리하는 파일명
+  private String uploadFileName;  // 사용자가 업로드한 파일명
+  private String storeFileName;   // 서버내부에서 관리하는 파일명
+  private String filePath;        // 파일경로
 
-    public UploadFile(String uploadFileName, String storeFileName) {
-        this.uploadFileName = uploadFileName;
-        this.storeFileName = storeFileName;
-    }
+  public UploadFile(String uploadFileName, String storeFileName, String filePath) {
+    this.uploadFileName = uploadFileName;
+    this.storeFileName = storeFileName;
+    this.filePath = filePath;
+  }
 }

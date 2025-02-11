@@ -6,11 +6,13 @@ import com.toongather.toongather.domain.keyword.domain.Keyword;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.global.common.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
 @Table(name = "REVIEW_KEYWORD")
 @Entity

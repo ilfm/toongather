@@ -34,30 +34,38 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
     //oauth2 추가
-    // https://mvnrepository.com/artifact/com.google.api-client/google-api-client
     implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.0.0'
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-client
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.7.5'
-    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-jose
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.5'
+
     //메일 추가
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
     //thymeleaf 추가
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
     //querydsl 추가
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
-//	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB
 
-    runtimeOnly 'com.h2database:h2'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //JUnit4 추가
-    testImplementation("org.junit.vintage:junit-vintage-engine") {
-        exclude group: "org.hamcrest", module: "hamcrest-core"
-    }
+    //database
+//	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB
+	runtimeOnly 'com.h2database:h2'
+
+    //lombok 추가
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+    //test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+	//JUnit4 추가
+	testImplementation("org.junit.vintage:junit-vintage-engine") {
+		exclude group: "org.hamcrest", module: "hamcrest-core"
+	}
+
 }
 
 test {
