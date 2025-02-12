@@ -1,6 +1,6 @@
 package com.toongather.toongather.domain.member.api;
 
-import com.toongather.toongather.domain.member.domain.Member;
+import com.toongather.toongather.domain.member.dto.MemberDTO;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.security.jwt.JwtToken;
@@ -34,22 +34,22 @@ public class AuthApi {
    *  2) 일치한다면 access token 재발급, 일치하지 않는다면 에러
    * - refresh token 만료된 경우
    *  1) 에러발생, 재로그인 요청
-   * @param user
+   * @param id
    * @param request
    * @return
    */
   @PostMapping("/refresh")
-  public ResponseEntity refreshToken(@RequestBody Map<String, String> user, HttpServletRequest request){
+  public ResponseEntity<String> refreshToken(@RequestBody Long id, HttpServletRequest request){
 
     JwtToken tokens = jwtTokenProvider.resolveToken(request);
 
     //refresh token 검증
     switch (jwtTokenProvider.validateToken(tokens.getRefreshToken())) {
-      case DENIED:
+      case DENIED :
       case EXPIRED :
         return new ResponseEntity("login need", HttpStatus.UNAUTHORIZED);
       case ACCESS :
-        Member member = memberService.findMember(Long.valueOf(user.get("id")));
+        MemberDTO member = memberService.findMemberById(id);
         //access token 발급
         if(member.getRefreshToken().equals(tokens.getRefreshToken())) {
           HttpHeaders httpHeaders = authService.setAccessTokenHeader(member);
@@ -58,7 +58,7 @@ public class AuthApi {
         break;
     }
 
-    return new ResponseEntity("login need", HttpStatus.UNAUTHORIZED);
+    return new ResponseEntity<>("login need", HttpStatus.UNAUTHORIZED);
   }
 
 }

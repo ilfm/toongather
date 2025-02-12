@@ -28,7 +28,7 @@ public class ReviewKeywordRepository {
     this.jpaQueryFactory = new JPAQueryFactory(em);
   }
 
-  public String save(ReviewKeyword reviewKeyword){
+  public Long save(ReviewKeyword reviewKeyword){
     if(reviewKeyword.getReviewKeywordId() == null){
       em.persist(reviewKeyword);
     }else{
@@ -40,7 +40,7 @@ public class ReviewKeywordRepository {
   /*
   * 나의 키워드 조회
   * */
-  public List<ReviewKeywordDto> findMyKeywordByReviewId(String reviewId){
+  public List<ReviewKeywordDto> findMyKeywordByReviewId(Long reviewId){
     QReviewKeyword rk = new QReviewKeyword("rk");
     QKeyword k = new QKeyword("k");
 

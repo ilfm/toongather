@@ -8,16 +8,20 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Getter
+@SequenceGenerator(
+    name = "WEBTOON_GENRE_KEYWORD_GEN",
+    sequenceName = "WEBTOON_GENRE_KEYWORD_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
 @Table(name="WEBTOON_GENRE_KEYWORD")
 @Entity
 public class WebtoonGenreKeyword extends BaseEntity {
 
     @Id
-    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="WEBTOON_GENRE_KEYWORD_SEQ"),
-                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="WGK")} )
-    @GeneratedValue(generator = "seqGenerator")
-    private String webtoonGenreKeywordId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator = "WEBTOON_GENRE_KEYWORD_GEN")
+    private Long webtoonGenreKeywordId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="toonId",foreignKey = @ForeignKey(name = "fk_toongenrekeword_to_toon"))

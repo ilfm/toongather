@@ -39,7 +39,7 @@ public class UserOAuth2Service extends DefaultOAuth2UserService {
 
     //이미 존재하는 email인 경우 로그인, 아닌경우 회원가입 로직
     Member member = makeUserByOAuthUser(oAuth2User.getAttributes(), registrationId);
-    Member findMember = memberRepository.findByEmail(member.getEmail());
+    Member findMember = memberRepository.findByEmail(member.getEmail()).orElse(null);
     if (findMember == null) {
       Role role = roleRepository.findByName(RoleType.ROLE_USER);
       member.addMemberRoles(role);

@@ -1,14 +1,14 @@
 buildscript {
-	ext {
-		queryDslVersion = "5.0.0"
-	}
+    ext {
+        queryDslVersion = "5.0.0"
+    }
 }
 
 plugins {
-	id 'org.springframework.boot' version '2.7.4'
-	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"//querydsl 추가
-	id 'java'
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"//querydsl 추가
+    id 'java'
 }
 
 group = 'com.toongather'
@@ -16,62 +16,75 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 //	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-  
-	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-client
-	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.7.5'
-// https://mvnrepository.com/artifact/org.springframework.security/spring-security-oauth2-jose
-	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.5'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
-	//querydsl 추가
-	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+    //oauth2 추가
+    implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.0.0'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.7.5'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: '5.7.5'
+
+    //메일 추가
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //thymeleaf 추가
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+    //querydsl 추가
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    //database
 //	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB
 	runtimeOnly 'com.h2database:h2'
+
+    //lombok 추가
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+    //test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	// https://mvnrepository.com/artifact/com.google.api-client/google-api-client
-	implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.0.0'
+    testImplementation 'org.springframework.security:spring-security-test'
 
 	//JUnit4 추가
 	testImplementation("org.junit.vintage:junit-vintage-engine") {
 		exclude group: "org.hamcrest", module: "hamcrest-core"
 	}
+
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
 querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
+    jpa = true
+    querydslSourcesDir = querydslDir
 }
 sourceSets {
-	main.java.srcDir querydslDir
+    main.java.srcDir querydslDir
 }
 configurations {
-	querydsl.extendsFrom compileClasspath
+    querydsl.extendsFrom compileClasspath
 }
 compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
+    options.annotationProcessorPath = configurations.querydsl
 }
 //querydsl 추가 끝

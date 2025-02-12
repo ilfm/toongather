@@ -19,6 +19,12 @@ import javax.persistence.*;
 
 @Getter
 @Setter
+@SequenceGenerator(
+    name = "REVIEW_SEQ_GEN",
+    sequenceName = "REVIEW_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
 @Entity
 @Table(name = "REVIEW")
 public class Review extends BaseEntity {
@@ -26,13 +32,11 @@ public class Review extends BaseEntity {
   public Review() {
   }
 
+
+  @GeneratedValue(strategy = GenerationType.SEQUENCE,
+      generator = "REVIEW_SEQ_GEN")
   @Id
-  @GenericGenerator(name = "seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-      parameters = {
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.SEQ_NAME, value = "REVIEW_SEQ"),
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.PREFIX, value = "RV")})
-  @GeneratedValue(generator = "seqGenerator")
-  private String reviewId;
+  private Long reviewId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "toonId", foreignKey = @ForeignKey(name = "fk_review_to_toon"))

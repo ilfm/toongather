@@ -20,7 +20,7 @@ public class Webtoon extends BaseEntity {
   }
 
   @Builder
-  public Webtoon(String toonId, String title, WebtoonStatus status, String imgPath,
+  public Webtoon(Long toonId, String title, WebtoonStatus status, String imgPath,
       Platform platform, Age age, String author) {
     this.toonId = toonId;
     this.title = title;
@@ -35,7 +35,7 @@ public class Webtoon extends BaseEntity {
   * */
   @Id
   @Column(nullable = false)
-  private String toonId;
+  private Long toonId;
 
   @Column(nullable = false)
   private String title;

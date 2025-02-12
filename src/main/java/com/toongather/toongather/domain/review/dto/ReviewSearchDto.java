@@ -1,7 +1,7 @@
 package com.toongather.toongather.domain.review.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.toongather.toongather.domain.member.dto.MemberDto;
+
 import com.toongather.toongather.domain.webtoon.WebtoonDto;
 import com.toongather.toongather.domain.webtoon.domain.Platform;
 import com.toongather.toongather.domain.webtoon.domain.WebtoonStatus;

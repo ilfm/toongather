@@ -138,7 +138,7 @@ public class ReviewService {
       // 나의기록 등록
       ReviewRecord record = ReviewRecord.builder().record(request.getRecord()).review(review)
           .build();
-      String reviewRecordId = reviewRecordRepository.saveReviewRecord(record);
+      Long reviewRecordId = reviewRecordRepository.saveReviewRecord(record);
       ReviewRecord reviewRecord = reviewRecordRepository.findById(reviewRecordId);
 
       // 파일 업로드
@@ -164,7 +164,7 @@ public class ReviewService {
   /*
    * 나의 기록 리뷰 리스트 조회
    * */
-  public List<ReviewRecordDto> findReviewRecordList(String reviewId) {
+  public List<ReviewRecordDto> findReviewRecordList(Long reviewId) {
     List<ReviewRecord> reviewRecords = reviewRecordRepository.selectReviewRecordList(reviewId);
     List<ReviewRecordDto> reviewRecordDtos = new ArrayList<>();
     reviewRecords.forEach(reviewRecord -> {
@@ -181,7 +181,7 @@ public class ReviewService {
   /*
    * 리뷰 키워드 불러오기
    * */
-  public List<ReviewKeywordDto> findMyKeywordByReviewId(String reviewId) {
+  public List<ReviewKeywordDto> findMyKeywordByReviewId(Long reviewId) {
     return reviewKeywordRepository.findMyKeywordByReviewId(reviewId);
   }
 
@@ -200,7 +200,7 @@ public class ReviewService {
     // 리뷰 불러오기
     Review review = reviewJpaRepository.findById(reviewId);
     // 리뷰 키워드 저장
-    String reviewKeywordId = reviewKeywordRepository.save(
+    Long reviewKeywordId = reviewKeywordRepository.save(
         ReviewKeyword.builder().keyword(keyword).review(review).build());
 
     return ReviewKeywordDto.builder().keywordId(keywordId).reviewKeywordId(reviewKeywordId)

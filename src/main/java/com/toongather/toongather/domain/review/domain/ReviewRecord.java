@@ -9,11 +9,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +23,12 @@ import org.hibernate.annotations.GenericGenerator;
 
 
 @Getter
+@SequenceGenerator(
+    name = "REVIEW_RECORD_GEN",
+    sequenceName = "REVIEW_RECORD_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
 @Table(name = "REVIEW_RECORD")
 @Entity
 public class ReviewRecord extends BaseEntity {
@@ -36,12 +44,9 @@ public class ReviewRecord extends BaseEntity {
   }
 
   @Id
-  @GenericGenerator(name = "seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-      parameters = {
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.SEQ_NAME, value = "REVIEW_RECORD_SEQ"),
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.PREFIX, value = "RR")})
-  @GeneratedValue(generator = "seqGenerator")
-  private String reviewRecordId;
+  @GeneratedValue(strategy = GenerationType.SEQUENCE,
+      generator = "REVIEW_RECORD_GEN")
+  private Long reviewRecordId;
 
   @ManyToOne
   @JoinColumn(name = "reviewId", foreignKey = @ForeignKey(name = "fk_reviewrecord_to_review"))
