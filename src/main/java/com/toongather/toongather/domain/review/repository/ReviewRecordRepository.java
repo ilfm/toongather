@@ -27,7 +27,7 @@ public class ReviewRecordRepository {
   }
 
   // 나의 기록 review reocrd 저장
-  public String saveReviewRecord(ReviewRecord reviewRecord) {
+  public Long saveReviewRecord(ReviewRecord reviewRecord) {
     if (reviewRecord.getReviewRecordId() == null) {
       em.persist(reviewRecord);
       em.flush();
@@ -38,12 +38,12 @@ public class ReviewRecordRepository {
     return reviewRecord.getReviewRecordId();
   }
 
-  public ReviewRecord findById(String reviewRecordId){return em.find(ReviewRecord.class, reviewRecordId);}
+  public ReviewRecord findById(Long reviewRecordId){return em.find(ReviewRecord.class, reviewRecordId);}
 
   /*
   * 나의 기록 조회
   * */
-  public List<ReviewRecord> selectReviewRecordList(String reviewId) {
+  public List<ReviewRecord> selectReviewRecordList(Long reviewId) {
     QReviewRecord rr = new QReviewRecord("rr");
     List<ReviewRecord> reviewRecordsList = jpaQueryFactory.select(rr).from(rr)
         .where(rr.review.reviewId.eq(reviewId)).fetch();

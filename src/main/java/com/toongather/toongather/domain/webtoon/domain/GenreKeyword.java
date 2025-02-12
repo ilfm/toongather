@@ -10,6 +10,12 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
+@SequenceGenerator(
+    name = "GENRE_KEYWORD_SEQ_GEN",
+    sequenceName = "GENRE_KEYWORD_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
 @Entity
 @Table(name = "GENRE_KEYWORD")
 public class GenreKeyword extends BaseEntity {
@@ -18,11 +24,9 @@ public class GenreKeyword extends BaseEntity {
     }
 
     @Id
-    @GenericGenerator(name="seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-            parameters ={@org.hibernate.annotations.Parameter(name= SeqGenerator.SEQ_NAME,value="GENRE_KEYWORD_SEQ"),
-                    @org.hibernate.annotations.Parameter(name= SeqGenerator.PREFIX,value="GK")} )
-    @GeneratedValue(generator = "seqGenerator")
-    private String genreKeywordId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+        generator = "GENRE_KEYWORD_SEQ_GEN")
+    private Long genreKeywordId;
 
     @Column(nullable = false)
     private String genreKeywordNm;

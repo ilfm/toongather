@@ -70,14 +70,14 @@ public class ReviewController {
 
   // 나의 키워드 조회
   @PostMapping("/myKeyword/{reviewId}")
-  public ResponseEntity<List<ReviewKeywordDto>> findMyKeyword(@PathVariable String reviewId) {
+  public ResponseEntity<List<ReviewKeywordDto>> findMyKeyword(@PathVariable Long reviewId) {
     List<ReviewKeywordDto> reviewKeywordDtos = reviewService.findMyKeywordByReviewId(reviewId);
     return new ResponseEntity<>(reviewKeywordDtos, HttpStatus.OK);
   }
 
   // 나의 기록 리스트 조회
   @PostMapping("/reviewRecord/{reviewId}")
-  public List<ReviewRecordDto> findMyReviewRecordByReviewId(@PathVariable String reviewId) {
+  public List<ReviewRecordDto> findMyReviewRecordByReviewId(@PathVariable Long reviewId) {
     System.out.println(reviewId + "reviewId");
     return reviewService.findReviewRecordList(reviewId);
   }

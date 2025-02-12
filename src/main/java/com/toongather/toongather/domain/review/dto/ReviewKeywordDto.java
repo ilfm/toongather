@@ -11,12 +11,12 @@ import lombok.Setter;
 @Setter
 public class ReviewKeywordDto {
 
-  private String reviewKeywordId;
+  private Long reviewKeywordId;
   private String keywordId;
   private String keywordNm;
 
   @QueryProjection
-  public ReviewKeywordDto(String reviewKeywordId, String keywordId, String keywordNm) {
+  public ReviewKeywordDto(Long reviewKeywordId, String keywordId, String keywordNm) {
     this.reviewKeywordId = reviewKeywordId;
     this.keywordId = keywordId;
     this.keywordNm = keywordNm;

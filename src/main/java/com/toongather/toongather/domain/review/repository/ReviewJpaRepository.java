@@ -70,7 +70,7 @@ public class ReviewJpaRepository {
     return em.find(Review.class, reviewId);
   }
 
-  public Review findByToonId(String toonId) {
+  public Review findByToonId(Long toonId) {
     QReview r = new QReview("r");
     Review review = jpaQueryFactory.select(r)
         .from(r)
@@ -92,7 +92,7 @@ public class ReviewJpaRepository {
   }
 
   // 리뷰 상세 찾기
-  public Review findReviewDetail(String reviewId) {
+  public Review findReviewDetail(Long reviewId) {
 
     QReview r = new QReview("r");
     Review review = jpaQueryFactory.select(r)

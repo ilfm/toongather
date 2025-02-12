@@ -14,8 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class CreateReviewRecordRequest{
-  private String toonId;
-  private String reviewId;
+  private Long toonId;
+  private Long reviewId;
   private String record;
   private List<MultipartFile> fileList;
 
@@ -23,7 +23,7 @@ public class CreateReviewRecordRequest{
   }
 
   @Builder
-  public CreateReviewRecordRequest(String toonId, String reviewId, String record) {
+  public CreateReviewRecordRequest(Long toonId, Long reviewId, String record) {
     this.toonId = toonId;
     this.reviewId = reviewId;
     this.record = record;

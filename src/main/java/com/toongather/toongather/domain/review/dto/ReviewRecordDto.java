@@ -12,8 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewRecordDto {
 
-  private String reviewId;
-  private String reviewRecordId;
+  private Long reviewId;
+  private Long reviewRecordId;
   private String record;
   private String amdDt;
 

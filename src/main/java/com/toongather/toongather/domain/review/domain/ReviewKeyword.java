@@ -14,17 +14,20 @@ import javax.persistence.*;
 
 @Builder
 @Getter
+@SequenceGenerator(
+    name = "REVIEW_KEYWORD_SEQ_GEN",
+    sequenceName = "REVIEW_KEYWORD_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
 @Table(name = "REVIEW_KEYWORD")
 @Entity
 public class ReviewKeyword extends BaseEntity {
 
   @Id
-  @GenericGenerator(name = "seqGenerator", strategy = "com.toongather.toongather.SeqGenerator",
-      parameters = {
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.SEQ_NAME, value = "REVIEW_KEYWORD_SEQ"),
-          @org.hibernate.annotations.Parameter(name = SeqGenerator.PREFIX, value = "RK")})
-  @GeneratedValue(generator = "seqGenerator")
-  private String reviewKeywordId;
+  @GeneratedValue(strategy = GenerationType.SEQUENCE,
+      generator = "REVIEW_KEYWORD_SEQ_GEN")
+  private Long reviewKeywordId;
 
   @ManyToOne
   @JoinColumn(name = "reviewId", foreignKey = @ForeignKey(name = "fk_reviewkeword_to_review"))
@@ -34,7 +37,7 @@ public class ReviewKeyword extends BaseEntity {
   @JoinColumn(name = "keywordId", foreignKey = @ForeignKey(name = "fk_reviewkeword_to_keyword"))
   private Keyword keyword;
 
-  public String getReviewKeywordId() {
+  public Long getReviewKeywordId() {
     return reviewKeywordId;
   }
 

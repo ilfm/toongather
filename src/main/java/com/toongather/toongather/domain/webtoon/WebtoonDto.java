@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class WebtoonDto {
 
-  private String toonId;
+  private Long toonId;
   private String title;
   private String summary;
   private String author;
