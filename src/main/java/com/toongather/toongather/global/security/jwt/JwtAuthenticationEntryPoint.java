@@ -1,18 +1,26 @@
 package com.toongather.toongather.global.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toongather.toongather.global.common.error.CommonError;
+import com.toongather.toongather.global.common.error.CommonErrorInfo;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    private final ObjectMapper objectMapper;
 
     /**
      * 유효한 자격증명을 제공하지 않고 접근하려 할때 401 unauthorized 에러 리턴
@@ -28,20 +36,22 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException {
 
         log.info("exception entrypoint");
-        CommonError error = (CommonError) request.getAttribute("exception");
-        if(error != null) setResponse(response, error);
-        else response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        String message = authException.getMessage();
 
-    }
+        //공통 응답 생성
+        CommonErrorInfo body = CommonErrorInfo.builder()
+            .path(request.getRequestURI())
+            .code(CommonError.COMMON_AUTH_ERROR.getCode())
+            .message(message)
+            .build();
 
-
-    private void setResponse(HttpServletResponse response, CommonError error) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
+        //내용 보내기
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().println("{ \"message\" : \"" + error.getMessage()
-          + "\", \"code\" : \"" +  error.getCode()
-          + "\", \"status\" : " + error.getStatus()
-          + ", \"errors\" : [ ] }");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.getWriter().write(objectMapper.writeValueAsString(body));
+
     }
+
 
 }
