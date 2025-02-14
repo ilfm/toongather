@@ -10,9 +10,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum CommonError {
 
-  JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "E0001", "JWT_REFRESH NEED" ),
-  JWT_DENIED(HttpStatus.UNAUTHORIZED, "E0002", "JWT_DENIED");
+  COMMON_AUTH_ERROR(HttpStatus.UNAUTHORIZED, "E0000", "AUTH_ERROR"),
+  JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "E0001", "JWT_REFRESH NEED"),
+  JWT_DENIED(HttpStatus.UNAUTHORIZED, "E0002", "JWT_DENIED"),
+  USER_NOT_PASSWORD(HttpStatus.UNAUTHORIZED, "E0010", "NOT_PASSWORD"),
+  USER_NOT_ACTIVE(HttpStatus.UNAUTHORIZED, "E0011", "NOT_ACTIVE_USER")
 
+  ;
   private final HttpStatus status;
   private final String code;
   private final String message;

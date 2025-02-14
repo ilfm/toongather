@@ -5,7 +5,8 @@ import com.toongather.toongather.domain.member.dto.JoinFormDTO;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.MemberService;
-import com.toongather.toongather.global.common.ResponseDTO;
+import com.toongather.toongather.global.common.error.CommonError;
+import com.toongather.toongather.global.common.error.CommonRuntimeException;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -34,63 +35,32 @@ public class MemberApi {
   private final AuthService authService;
 
   @PostMapping("/join")
-  public ResponseEntity<ResponseDTO> join(@Valid @RequestBody JoinFormDTO dto) {
-
-    Long id = memberService.join(dto);
-    log.info("id : {}", id);
-
-    ResponseDTO response = ResponseDTO.builder()
-        .message("success")
-        .code("200")
-        .data(Map.of("id", id))
-        .build();
-
-    return new ResponseEntity<>(response, HttpStatus.OK);
+  public Long join(@Valid @RequestBody JoinFormDTO dto) {
+    return memberService.join(dto);
   }
 
   @PostMapping("/confirm")
-  public ResponseEntity<ResponseDTO> confirm(@RequestBody MemberDTO memberDto) {
-
+  public void confirm(@RequestBody MemberDTO memberDto) {
     memberService.confirmMember(memberDto.getId(), memberDto.getTempCode());
-
-    ResponseDTO response = ResponseDTO.builder()
-        .message("success")
-        .build();
-
-    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   @GetMapping("/{id}/resend-email")
-  public ResponseEntity<ResponseDTO> reSendEmail(@PathVariable Long id) {
-
+  public void reSendEmail(@PathVariable Long id) {
     memberService.reSendEmail(id);
-
-    ResponseDTO response = ResponseDTO.builder()
-        .message("success")
-        .build();
-
-    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
 
   @PostMapping("/login")
-  public ResponseEntity<ResponseDTO> login(@RequestBody MemberDTO memberDto) {
+  public ResponseEntity<String> login(@RequestBody MemberDTO memberDto) {
 
     MemberDTO member = memberService.loginMember(memberDto.getEmail(), memberDto.getPassword());
 
     if (member == null) {
-      ResponseDTO response = ResponseDTO.builder()
-          .message("password failed")
-          .build();
-      return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+      throw new CommonRuntimeException(CommonError.USER_NOT_PASSWORD);
     }
 
     if (member.getMemberType() == MemberType.TEMP) {
-      ResponseDTO response = ResponseDTO.builder()
-          .message("temp member")
-          .data(Map.of("id", member.getId()))
-          .build();
-      return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+      throw new CommonRuntimeException(CommonError.USER_NOT_ACTIVE);
     }
 
     //로그인 성공 시, access token 생성
@@ -100,41 +70,22 @@ public class MemberApi {
     authService.updateTokenAndLoginHistoryById(member.getId(), refreshToken);
     httpHeaders.add("X-RT_TOKEN", "Bearer " + refreshToken);
 
-    ResponseDTO response = ResponseDTO.builder()
-        .message("success")
-        .build();
-
-    return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
+    return new ResponseEntity<>("login success", httpHeaders, HttpStatus.OK);
 
   }
 
   @GetMapping("/search/members")
-  public ResponseEntity<ResponseDTO> searchMember(@RequestBody MemberDTO member) {
-
-    ConcurrentMap<String, Object> result = memberService.findMemberByNameAndPhone(
+  public ConcurrentMap<String, Object> searchMember(@RequestBody MemberDTO member) {
+    return memberService.findMemberByNameAndPhone(
         member.getName(),
         member.getPhone());
-
-    ResponseDTO response = ResponseDTO.builder()
-        .message("success")
-        .data(result)
-        .build();
-
-    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
 
   // 이메일로 비밀번호 초기화하기
   @GetMapping("/{email}/reset-password")
-  public ResponseEntity<ResponseDTO> resetPassword(@PathVariable String email) {
-
+  public void resetPassword(@PathVariable String email) {
     memberService.resetPasswordByEmail(email);
-
-    ResponseDTO response = ResponseDTO.builder()
-        .message("success")
-        .build();
-
-    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   @GetMapping("/test")
