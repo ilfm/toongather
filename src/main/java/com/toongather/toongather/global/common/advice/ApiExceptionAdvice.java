@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 public class ApiExceptionAdvice {
 
   @ExceptionHandler({CommonRuntimeException.class})
-  public ResponseEntity exceptionHandler(HttpServletRequest request, final CommonRuntimeException e) {
+  public ResponseEntity<CommonErrorInfo> exceptionHandler(
+      HttpServletRequest request,
+      final CommonRuntimeException e) {
     return ResponseEntity
         .status(e.getError().getStatus())
         .body(CommonErrorInfo.builder()
-            .status(e.getError().getStatus())
+            .path(request.getRequestURI())
             .code(e.getError().getCode())
             .message(e.getError().getMessage())
             .build());

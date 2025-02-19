@@ -6,7 +6,6 @@ public class CommonRuntimeException extends RuntimeException{
 
   public CommonRuntimeException(CommonError error) {
     super(error.getMessage());
-
     this.error = error;
   }
 
