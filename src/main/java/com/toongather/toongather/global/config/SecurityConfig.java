@@ -4,7 +4,6 @@ import com.toongather.toongather.global.security.jwt.JwtAccessDeniedHandler;
 import com.toongather.toongather.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.toongather.toongather.global.security.jwt.JwtAuthenticationFilter;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
-import com.toongather.toongather.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.toongather.toongather.global.security.oauth2.UserOAuth2Service;
@@ -39,8 +38,6 @@ public class SecurityConfig {
   private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
   private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-
-  private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
 
   @Bean
