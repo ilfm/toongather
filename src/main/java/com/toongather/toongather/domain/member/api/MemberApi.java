@@ -3,8 +3,12 @@ package com.toongather.toongather.domain.member.api;
 import com.toongather.toongather.domain.member.domain.MemberType;
 import com.toongather.toongather.domain.member.dto.JoinFormDTO;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
+import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
+import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeRequest;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.MemberService;
+import com.toongather.toongather.global.common.ApiResponse;
 import com.toongather.toongather.global.common.error.CommonError;
 import com.toongather.toongather.global.common.error.CommonRuntimeException;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
@@ -16,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,21 +42,10 @@ public class MemberApi {
     return memberService.join(dto);
   }
 
-  @PostMapping("/confirm")
-  public void confirm(@RequestBody MemberDTO memberDto) {
-    memberService.confirmMember(memberDto.getId(), memberDto.getTempCode());
-  }
-
-  @GetMapping("/{id}/resend-email")
-  public void reSendEmail(@PathVariable Long id) {
-    memberService.reSendEmail(id);
-  }
-
-
   @PostMapping("/login")
-  public ResponseEntity<String> login(@RequestBody MemberDTO memberDto) {
+  public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequest request) {
 
-    MemberDTO member = memberService.loginMember(memberDto.getEmail(), memberDto.getPassword());
+    MemberDTO member = memberService.loginMember(request.getEmail(), request.getPassword());
 
     if (member == null) {
       throw new CommonRuntimeException(CommonError.USER_NOT_PASSWORD);
@@ -68,17 +60,37 @@ public class MemberApi {
     //refresh token 생성 및 저장
     String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
     authService.updateTokenAndLoginHistoryById(member.getId(), refreshToken);
-    httpHeaders.add("X-RT_TOKEN", "Bearer " + refreshToken);
+    httpHeaders.add("Authorization", "Bearer " + refreshToken);
 
-    return new ResponseEntity<>("login success", httpHeaders, HttpStatus.OK);
+    ApiResponse<Object> result = ApiResponse.builder()
+        .path("/member/login")
+        .data(Map.of("id", member.getId()))
+        .message("login success")
+        .build();
+
+    return new ResponseEntity<>(result, httpHeaders, HttpStatus.OK);
 
   }
 
+  /**
+   * 임시 회원을 정식 회원으로 등록
+   * 이메일에서 온 tempCode를 확인
+   * @param request
+   */
+  @PostMapping("/confirm")
+  public void confirm(@RequestBody TempCodeRequest request) {
+    memberService.confirmMemberByTempCode(request.getId(), request.getTempCode());
+  }
+
+  @GetMapping("/{id}/resend-email")
+  public void reSendEmail(@PathVariable Long id) {
+    memberService.reSendEmail(id);
+  }
+
+
   @GetMapping("/search/members")
-  public ConcurrentMap<String, Object> searchMember(@RequestBody MemberDTO member) {
-    return memberService.findMemberByNameAndPhone(
-        member.getName(),
-        member.getPhone());
+  public ConcurrentMap<String, Object> searchMember(@RequestBody SearchMemberRequest member) {
+    return memberService.findMemberByNameAndPhone(member.getName(), member.getPhone());
   }
 
 
@@ -86,12 +98,6 @@ public class MemberApi {
   @GetMapping("/{email}/reset-password")
   public void resetPassword(@PathVariable String email) {
     memberService.resetPasswordByEmail(email);
-  }
-
-  @GetMapping("/test")
-  @PreAuthorize("hasAnyRole('ROLE_USER')")
-  public String test() {
-    return "success";
   }
 
 }

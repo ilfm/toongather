@@ -27,8 +27,8 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final RoleRepository roleRepository;
   private final MemberRoleRepository memberRoleRepository;
-  private final BCryptPasswordEncoder passwordEncoder;
   private final EmailService emailService;
+  private final BCryptPasswordEncoder passwordEncoder;
 
 
   /**
@@ -71,6 +71,7 @@ public class MemberService {
     return new MemberDTO(member);
   }
 
+
   public ConcurrentMap<String, Object> findMemberByNameAndPhone(String name, String phone) {
     Member member = memberRepository.findByNameAndPhone(name, phone)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
@@ -99,15 +100,15 @@ public class MemberService {
 
   }
 
-  //임시 회원에서 회원가입 코드를 통해 정식 회원으로 변경
-  public void confirmMember(Long id, String tempCode) {
+  public void confirmMemberByTempCode(Long id, String tempCode) {
     Member member = memberRepository.findById(id)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
     if (!member.getTempCode().equals(tempCode)) {
-      throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+      throw new IllegalArgumentException("임시번호가 일치하지 않습니다.");
     }
     if (member.getTempCodeExpired().isBefore(LocalDateTime.now())) {
-      throw new IllegalArgumentException("인증번호가 만료되었습니다.");
+      throw new IllegalArgumentException("임시번호가 만료되었습니다.");
     }
     member.updateTempCode(null, null);
     member.setMemberType(MemberType.ACTIVE);

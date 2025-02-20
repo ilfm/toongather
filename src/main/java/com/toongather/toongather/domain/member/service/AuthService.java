@@ -7,6 +7,7 @@ import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,6 @@ public class AuthService {
 
   private final MemberRepository memberRepository;
   private final JwtTokenProvider jwtTokenProvider;
-
 
   /**
    * refresh token 재발급시 db저장 및 기록
@@ -47,6 +47,8 @@ public class AuthService {
 
     return httpHeaders;
   }
+
+
 
 
 }

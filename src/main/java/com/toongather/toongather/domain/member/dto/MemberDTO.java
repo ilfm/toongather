@@ -4,6 +4,8 @@ import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.MemberType;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +39,35 @@ public class MemberDTO {
         .stream().map(target -> target.getRole().getName().name())
         .collect(Collectors.toList());
     this.memberType = member.getMemberType();
+  }
+
+  @Getter
+  @Setter
+  public static class LoginRequest {
+    @NotEmpty
+    @Email
+    private String email;
+    @NotEmpty
+    private String password;
+  }
+
+  @Getter
+  @Setter
+  public static class TempCodeRequest {
+    @NotEmpty
+    Long id;
+
+    @NotEmpty
+    private String tempCode;
+  }
+
+  @Getter
+  @Setter
+  public static class SearchMemberRequest {
+    @NotEmpty
+    private String name;
+    @NotEmpty
+    private String phone;
   }
 
 }
