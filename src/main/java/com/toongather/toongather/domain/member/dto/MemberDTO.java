@@ -43,7 +43,7 @@ public class MemberDTO {
 
   @Getter
   @Setter
-  public static class LoginRequest {
+  public static class LoginDTO {
     @NotEmpty
     @Email
     private String email;
@@ -53,7 +53,7 @@ public class MemberDTO {
 
   @Getter
   @Setter
-  public static class TempCodeRequest {
+  public static class TempCodeDTO {
     @NotEmpty
     Long id;
 
@@ -63,7 +63,7 @@ public class MemberDTO {
 
   @Getter
   @Setter
-  public static class SearchMemberRequest {
+  public static class SearchMemberDTO {
     @NotEmpty
     private String name;
     @NotEmpty

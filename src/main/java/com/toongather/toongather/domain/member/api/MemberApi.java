@@ -3,9 +3,9 @@ package com.toongather.toongather.domain.member.api;
 import com.toongather.toongather.domain.member.domain.MemberType;
 import com.toongather.toongather.domain.member.dto.JoinFormDTO;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeRequest;
+import com.toongather.toongather.domain.member.dto.MemberDTO.LoginDTO;
+import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberDTO;
+import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeDTO;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.ApiResponse;
@@ -43,7 +43,7 @@ public class MemberApi {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequest request) {
+  public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginDTO request) {
 
     MemberDTO member = memberService.loginMember(request.getEmail(), request.getPassword());
 
@@ -78,7 +78,7 @@ public class MemberApi {
    * @param request
    */
   @PostMapping("/confirm")
-  public void confirm(@RequestBody TempCodeRequest request) {
+  public void confirm(@RequestBody TempCodeDTO request) {
     memberService.confirmMemberByTempCode(request.getId(), request.getTempCode());
   }
 
@@ -89,7 +89,7 @@ public class MemberApi {
 
 
   @GetMapping("/search/members")
-  public ConcurrentMap<String, Object> searchMember(@RequestBody SearchMemberRequest member) {
+  public ConcurrentMap<String, Object> searchMember(@RequestBody SearchMemberDTO member) {
     return memberService.findMemberByNameAndPhone(member.getName(), member.getPhone());
   }
 
