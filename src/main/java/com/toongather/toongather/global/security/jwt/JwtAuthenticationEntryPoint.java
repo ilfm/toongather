@@ -1,7 +1,6 @@
 package com.toongather.toongather.global.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.toongather.toongather.global.common.error.CommonError;
 import com.toongather.toongather.global.common.error.CommonErrorInfo;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -41,7 +40,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         //공통 응답 생성
         CommonErrorInfo body = CommonErrorInfo.builder()
             .path(request.getRequestURI())
-            .code(CommonError.COMMON_AUTH_ERROR.getCode())
             .message(message)
             .build();
 
