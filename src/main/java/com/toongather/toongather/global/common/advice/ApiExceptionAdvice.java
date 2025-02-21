@@ -21,7 +21,6 @@ public class ApiExceptionAdvice {
         .status(e.getError().getStatus())
         .body(CommonErrorInfo.builder()
             .path(request.getRequestURI())
-            .code(e.getError().getCode())
             .message(e.getError().getMessage())
             .build());
   }
@@ -35,7 +34,6 @@ public class ApiExceptionAdvice {
         .status(CommonError.VALIDATION_ERROR.getStatus())
         .body(CommonErrorInfo.builder()
             .path(request.getRequestURI())
-            .code(CommonError.VALIDATION_ERROR.getCode())
             .message(e.getBindingResult().getAllErrors().get(0).getDefaultMessage())
             .build());
   }
