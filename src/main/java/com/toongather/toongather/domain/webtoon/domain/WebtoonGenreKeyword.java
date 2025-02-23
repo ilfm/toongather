@@ -2,6 +2,7 @@ package com.toongather.toongather.domain.webtoon.domain;
 
 import com.toongather.toongather.global.common.BaseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,6 +33,7 @@ public class WebtoonGenreKeyword extends BaseEntity {
     @JoinColumn(name = "genreKeywordId", foreignKey = @ForeignKey(name = "fk_toongenrekeword_to_genrekeyword"))
     private GenreKeyword genreKeyword;
 
+    @Builder
     public WebtoonGenreKeyword(Webtoon webtoon, GenreKeyword genreKeyword) {
         this.webtoon = webtoon;
         this.genreKeyword = genreKeyword;
