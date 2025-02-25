@@ -2,6 +2,7 @@ package com.toongather.toongather.domain.review.repository;
 
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import com.toongather.toongather.domain.review.domain.QReviewRecord;
 import com.toongather.toongather.domain.review.domain.ReviewRecord;
 import com.toongather.toongather.domain.review.dto.ReviewRecordDto;
@@ -38,11 +39,13 @@ public class ReviewRecordRepository {
     return reviewRecord.getReviewRecordId();
   }
 
-  public ReviewRecord findById(Long reviewRecordId){return em.find(ReviewRecord.class, reviewRecordId);}
+  public ReviewRecord findById(Long reviewRecordId) {
+    return em.find(ReviewRecord.class, reviewRecordId);
+  }
 
   /*
-  * 나의 기록 조회
-  * */
+   * 나의 기록 조회
+   * */
   public List<ReviewRecord> selectReviewRecordList(Long reviewId) {
     QReviewRecord rr = new QReviewRecord("rr");
     List<ReviewRecord> reviewRecordsList = jpaQueryFactory.select(rr).from(rr)
