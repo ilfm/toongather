@@ -11,13 +11,14 @@ import lombok.Getter;
 @Builder
 @Getter
 public class CreateReviewRequest {
+
   private Long memberId;
   private Long toonId;
   private String recommendComment;
   private Long star;
   private List<String> keywords;
 
-  public Review toEntity(Member member, Webtoon webtoon){
+  public Review toEntity(Member member, Webtoon webtoon) {
     return Review.builder()
         .toon(webtoon)
         .member(member)

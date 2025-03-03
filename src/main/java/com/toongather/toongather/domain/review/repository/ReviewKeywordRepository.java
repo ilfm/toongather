@@ -18,5 +18,7 @@ public interface ReviewKeywordRepository extends JpaRepository<ReviewKeyword, Lo
           + " where r.reviewId = :reviewId")
   public List<KeywordDto> getKeywordsByReviewId(@Param("reviewId") Long reviewId);
 
+  public boolean existsByReviewReviewId(Long reviewId);
+
   public void deleteByReviewReviewId(Long reviewId);
 }
