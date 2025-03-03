@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import com.toongather.toongather.global.common.error.custom.MemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -105,10 +107,10 @@ public class MemberService {
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
     if (!member.getTempCode().equals(tempCode)) {
-      throw new IllegalArgumentException("임시번호가 일치하지 않습니다.");
+      throw new MemberException.TempCodeInvalidException();
     }
     if (member.getTempCodeExpired().isBefore(LocalDateTime.now())) {
-      throw new IllegalArgumentException("임시번호가 만료되었습니다.");
+      throw new MemberException.TempCodeExpiredException();
     }
     member.updateTempCode(null, null);
     member.setMemberType(MemberType.ACTIVE);
