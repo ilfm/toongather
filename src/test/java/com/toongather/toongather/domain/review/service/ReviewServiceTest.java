@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import com.toongather.toongather.domain.keyword.dto.KeywordDto;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.dto.JoinFormDTO;
+import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.domain.ReviewSortType;
@@ -23,18 +24,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 
 import org.junit.jupiter.api.DisplayName;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
+
 
 @Slf4j
 @SpringBootTest
@@ -57,20 +60,16 @@ public class ReviewServiceTest {
   @Autowired
   private ReviewKeywordService reviewKeywordService;
 
+  @MockBean
+  private EmailService emailService;
+
   @DisplayName("작성한 리뷰를 정렬타입에 따라서 조회 할 수 있다.")
   @Rollback(true)
   @Test
   void searchWithSortType() throws ParseException {
     //Given
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    JoinFormDTO joinFormDTO = new JoinFormDTO();
-    joinFormDTO.setEmail("ddddd@naver.com");
-    joinFormDTO.setName("테스트");
-    joinFormDTO.setNickName("테스트닉네임");
-    joinFormDTO.setPassword("1234");
-    joinFormDTO.setPhone("010-7666-1111");
-    Long memberId = memberService.join(joinFormDTO);
+    Long memberId = createTestMember();
     Member member = memberService.findMemberEntityById(memberId);
 
     Webtoon w1 = createWebtoon("집이없어", 1L);
@@ -135,13 +134,7 @@ public class ReviewServiceTest {
   @Test
   void createReview() {
     //Given
-    JoinFormDTO joinFormDTO = new JoinFormDTO();
-    joinFormDTO.setEmail("ddddd@naver.com");
-    joinFormDTO.setName("테스트");
-    joinFormDTO.setNickName("테스트닉네임");
-    joinFormDTO.setPassword("1234");
-    joinFormDTO.setPhone("010-7666-1111");
-    Long memberId = memberService.join(joinFormDTO);
+    Long memberId = createTestMember();
 
     Webtoon w1 = createWebtoon("집이없어", 1L);
     webtoonRepository.save(w1);
@@ -162,9 +155,9 @@ public class ReviewServiceTest {
     List<KeywordDto> findKeyword = reviewKeywordService.getKeywordsByReviewId(reviewId);
 
     //Then
-    Assertions.assertThat(reviewId).isNotNull();
-    Assertions.assertThat(reviewDto).extracting("star", "recommendComment").contains(5L, "재밌구만유");
-    Assertions.assertThat(findKeyword)
+    assertThat(reviewId).isNotNull();
+    assertThat(reviewDto).extracting("star", "recommendComment").contains(5L, "재밌구만유");
+    assertThat(findKeyword)
         .hasSize(2)
         .extracting(KeywordDto::getKeywordNm)
         .containsExactlyInAnyOrder("혐관", "학원물");
@@ -175,14 +168,7 @@ public class ReviewServiceTest {
   @Test
   void updateReview() {
     //Given
-    JoinFormDTO joinFormDTO = new JoinFormDTO();
-    joinFormDTO.setEmail("ddddd@naver.com");
-    joinFormDTO.setName("테스트");
-    joinFormDTO.setNickName("테스트닉네임");
-    joinFormDTO.setPassword("1234");
-    joinFormDTO.setPhone("010-7666-1111");
-    Long memberId = memberService.join(joinFormDTO);
-    Member member = memberService.findMemberEntityById(memberId);
+    Long memberId = createTestMember();
 
     Webtoon w1 = createWebtoon("집이없어", 1L);
     webtoonRepository.save(w1);
@@ -198,7 +184,6 @@ public class ReviewServiceTest {
         .keywords(prevKeywords)
         .build();
 
-    //When
     Long reviewId = reviewService.createReview(createRequest);
 
     UpdateReviewRequest updateRequest = UpdateReviewRequest.builder()
@@ -208,16 +193,61 @@ public class ReviewServiceTest {
         .keywords(updateKeywords)
         .build();
 
+    //When
     reviewService.updateReview(updateRequest);
     ReviewDto reviewDto = reviewService.findById(reviewId);
     List<KeywordDto> findKeyword = reviewKeywordService.getKeywordsByReviewId(reviewId);
 
     //Then
-    Assertions.assertThat(reviewDto).extracting("star", "recommendComment").contains(2L, "추천안함");
-    Assertions.assertThat(findKeyword)
+    assertThat(reviewDto).extracting("star", "recommendComment").contains(2L, "추천안함");
+    assertThat(findKeyword)
         .hasSize(2)
         .extracting(KeywordDto::getKeywordNm)
         .containsExactlyInAnyOrder("호러", "성장물");
+  }
+
+  @DisplayName("리뷰를 삭제 할 수 있다. 삭제할 리뷰가 없는 경우 NoSuchElementException 예외발생")
+  @Rollback
+  @Test
+  public void deleteReview() {
+    //Given
+    Long memberId = createTestMember();
+
+    Webtoon w1 = createWebtoon("집이없어", 1L);
+    webtoonRepository.save(w1);
+
+    List<String> keywords = new ArrayList<>(List.of("혐관", "학원물"));
+
+    CreateReviewRequest createRequest = CreateReviewRequest.builder()
+        .memberId(memberId)
+        .star(5L)
+        .toonId(w1.getToonId())
+        .recommendComment("재밌구만유")
+        .keywords(keywords)
+        .build();
+
+    Long nonExistentReviewId = -1L;
+    Long reviewId = reviewService.createReview(createRequest);
+    ReviewDto reviewBeforeDelete = reviewService.findById(reviewId);
+
+    //When
+    reviewService.deleteReview(reviewId);
+    //then
+    assertThat(reviewBeforeDelete).isNotNull();
+    assertThatThrownBy(() -> reviewService.deleteReview(nonExistentReviewId))
+        .isInstanceOf(NoSuchElementException.class)
+        .hasMessageContaining("삭제 할 리뷰가 없습니다.");
+  }
+
+  private Long createTestMember() {
+    JoinFormDTO joinFormDTO = new JoinFormDTO();
+    joinFormDTO.setEmail("ddddd@naver.com");
+    joinFormDTO.setName("테스트");
+    joinFormDTO.setNickName("테스트닉네임");
+    joinFormDTO.setPassword("1234");
+    joinFormDTO.setPhone("010-7666-1111");
+    Long memberId = memberService.join(joinFormDTO);
+    return memberId;
   }
 
   private Webtoon createWebtoon(String title, Long toonId) {
