@@ -7,6 +7,7 @@ import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.domain.ReviewSortType;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
+
 import com.toongather.toongather.domain.webtoon.domain.Age;
 import com.toongather.toongather.domain.webtoon.domain.Platform;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
@@ -54,6 +55,7 @@ public class ReviewJpaRepositoryTest {
   @Test
   public void searchWithSortTypeJpql() throws ParseException {
     //Given
+
     JoinFormDTO joinFormDTO = new JoinFormDTO();
     joinFormDTO.setEmail("ddddd@naver.com");
     joinFormDTO.setName("테스트");
@@ -109,6 +111,7 @@ public class ReviewJpaRepositoryTest {
 
     //When
     ReviewSortType starAscSort = ReviewSortType.STAR_ASC;
+
     List<ReviewDto> statAscResult = reviewJpaRepository.findAllWithSortType(starAscSort);
 
     ReviewSortType starDescSort = ReviewSortType.STAR_DESC;
@@ -116,16 +119,9 @@ public class ReviewJpaRepositoryTest {
 
     ReviewSortType createDtDescSort = ReviewSortType.CREATE_DATE_DESC;
     List<ReviewDto> createDtDescResult = reviewJpaRepository.findAllWithSortType(createDtDescSort);
+
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-//    for (ReviewSearchDto dto: createDtDescResult) {
-//      System.out.println("date : "+ dto.getReviewDate());
-//      System.out.println("date : "+ sdf.parse(dto.getReviewDate()));
-//    };
-
-    //Then
-//    System.out.println("star 1: "+statAscResult.get(0).getStar());
-//    System.out.println("star 2: "+statDescResult.get(0).getStar());
     Assertions.assertThat(statAscResult.get(0).getStar()).isEqualTo(4L);
     Assertions.assertThat(statDescResult.get(0).getStar()).isEqualTo(5L);
     Assertions.assertThat(sdf.parse(createDtDescResult.get(0).getReviewDate()))

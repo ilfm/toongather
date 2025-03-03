@@ -11,6 +11,7 @@ import com.toongather.toongather.domain.review.domain.ReviewSortType;
 import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
+
 import com.toongather.toongather.domain.review.repository.ReviewJpaRepository;
 import com.toongather.toongather.domain.webtoon.domain.Age;
 import com.toongather.toongather.domain.webtoon.domain.Platform;
@@ -30,6 +31,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
@@ -53,6 +55,7 @@ public class ReviewServiceTest {
 
   @Autowired
   private ReviewJpaRepository reviewJpaRepository;
+
 
   @Autowired
   private ReviewKeywordService reviewKeywordService;
@@ -85,6 +88,7 @@ public class ReviewServiceTest {
         .toon(w1)
         .build();
     reviewJpaRepository.save(r1);
+
     reviewJpaRepository.flush();
 
     try {
@@ -93,7 +97,9 @@ public class ReviewServiceTest {
       e.printStackTrace();
     }
 
+
     Review r2 = Review.builder().member(member)
+
         .star(4L)
         .recommendComment("넘잼")
         .toon(w2)
@@ -224,5 +230,6 @@ public class ReviewServiceTest {
     return Webtoon.builder().title(title).toonId(toonId).author("작가").age(Age.ALL).imgPath(
             "https://image-comic.pstatic.net/webtoon/721433/thumbnail/thumbnail_IMAG21_c907f727-e522-4517-952e-398ea95d2efb.jpg")
         .platform(Platform.NAVER).status(WebtoonStatus.END).build();
+
   }
 }
