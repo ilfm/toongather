@@ -18,7 +18,10 @@ public enum CommonError {
   USER_NOT_ACTIVE(HttpStatus.UNAUTHORIZED,  "NOT_ACTIVE_USER"),
 
   //validation
-  VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR")
+  VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR"),
+
+  //webtoon
+  WEBTOON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 웹툰이 존재하지 않습니다."),
 
   ;
   private final HttpStatus status;
