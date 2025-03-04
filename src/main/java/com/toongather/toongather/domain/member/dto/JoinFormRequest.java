@@ -1,7 +1,6 @@
 package com.toongather.toongather.domain.member.dto;
 
-import javax.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,20 +8,20 @@ import lombok.Setter;
 
 @Getter @Setter
 @NoArgsConstructor
-public class JoinFormDTO {
+public class JoinFormRequest {
 
-  @NotEmpty
+  @NotNull
   private String name;
 
-  @NotEmpty
+  @NotNull
   private String email;
 
   private String phone;
 
-  @NotEmpty
+  @NotNull
   private String nickName;
 
-  @NotEmpty
+  @NotNull
   private String password;
 
 
