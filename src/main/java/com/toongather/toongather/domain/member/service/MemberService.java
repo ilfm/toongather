@@ -89,6 +89,12 @@ public class MemberService {
     return new MemberDTO(member);
   }
 
+  public Member findMemberEntityById(Long id) {
+    return memberRepository.findMemberWithRole(id)
+        .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+  }
+
   public void resetPasswordByEmail(String email) {
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
