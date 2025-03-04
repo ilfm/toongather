@@ -34,7 +34,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class ReviewRecord extends BaseEntity {
 
   public ReviewRecord() {
-
   }
 
   @Builder

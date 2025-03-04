@@ -36,11 +36,10 @@ public class WebtoonService {
 
     @Transactional
     public void updateWebtoon(Long toonId, WebtoonRequest request) {
-        List<GenreKeyword> genreKeywords = getGenreKeywords(request);
-
         Webtoon webtoon = webtoonRepository.findById(toonId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 웹툰이 존재하지 않습니다."));
 
+        List<GenreKeyword> genreKeywords = getGenreKeywords(request);
         webtoon.update(request.getAge(), request.getSummary(), request.getStatus(), genreKeywords);
     }
 
