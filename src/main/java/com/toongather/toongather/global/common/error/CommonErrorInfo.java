@@ -11,14 +11,12 @@ import lombok.NoArgsConstructor;
 public class CommonErrorInfo {
 
   private String path;
-  private String code;
   private String message;
 
   @Builder
-  public CommonErrorInfo(String code, String path, String message) {
-    this.code = code;
-    this.message = message;
+  public CommonErrorInfo(String path, String message) {
     this.path = path;
+    this.message = message;
   }
 
 }
