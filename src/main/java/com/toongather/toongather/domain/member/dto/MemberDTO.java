@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,8 +44,8 @@ public class MemberDTO {
 
   @Getter
   @Setter
-  public static class LoginDTO {
-    @NotEmpty
+  public static class LoginRequest {
+    @NotNull
     @Email
     private String email;
     @NotEmpty
@@ -53,20 +54,20 @@ public class MemberDTO {
 
   @Getter
   @Setter
-  public static class TempCodeDTO {
-    @NotEmpty
+  public static class TempCodeRequest {
+    @NotNull
     Long id;
 
-    @NotEmpty
+    @NotNull
     private String tempCode;
   }
 
   @Getter
   @Setter
-  public static class SearchMemberDTO {
-    @NotEmpty
+  public static class SearchMemberRequest {
+    @NotNull
     private String name;
-    @NotEmpty
+    @NotNull
     private String phone;
   }
 

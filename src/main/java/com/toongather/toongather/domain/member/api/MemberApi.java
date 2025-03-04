@@ -1,11 +1,11 @@
 package com.toongather.toongather.domain.member.api;
 
 import com.toongather.toongather.domain.member.domain.MemberType;
-import com.toongather.toongather.domain.member.dto.JoinFormDTO;
+import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.LoginDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeDTO;
+import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
+import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeRequest;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.ApiResponse;
@@ -38,18 +38,14 @@ public class MemberApi {
   private final AuthService authService;
 
   @PostMapping("/join")
-  public Long join(@Valid @RequestBody JoinFormDTO dto) {
+  public Long join(@Valid @RequestBody JoinFormRequest dto) {
     return memberService.join(dto);
   }
 
   @PostMapping("/login")
-  public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginDTO request) {
+  public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequest request) {
 
     MemberDTO member = memberService.loginMember(request.getEmail(), request.getPassword());
-
-    if (member == null) {
-      throw new CommonRuntimeException(CommonError.USER_NOT_PASSWORD);
-    }
 
     if (member.getMemberType() == MemberType.TEMP) {
       throw new CommonRuntimeException(CommonError.USER_NOT_ACTIVE);
@@ -60,7 +56,7 @@ public class MemberApi {
     //refresh token 생성 및 저장
     String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
     authService.updateTokenAndLoginHistoryById(member.getId(), refreshToken);
-    httpHeaders.add("Authorization", "Bearer " + refreshToken);
+    httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + refreshToken);
 
     ApiResponse<Object> result = ApiResponse.builder()
         .path("/member/login")
@@ -78,7 +74,7 @@ public class MemberApi {
    * @param request
    */
   @PostMapping("/confirm")
-  public void confirm(@RequestBody TempCodeDTO request) {
+  public void confirm(@RequestBody TempCodeRequest request) {
     memberService.confirmMemberByTempCode(request.getId(), request.getTempCode());
   }
 
@@ -89,7 +85,7 @@ public class MemberApi {
 
 
   @GetMapping("/search/members")
-  public ConcurrentMap<String, Object> searchMember(@RequestBody SearchMemberDTO member) {
+  public ConcurrentMap<String, Object> searchMember(@RequestBody SearchMemberRequest member) {
     return memberService.findMemberByNameAndPhone(member.getName(), member.getPhone());
   }
 
