@@ -7,6 +7,7 @@ import com.toongather.toongather.domain.webtoon.dto.WebtoonRequest;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonCreateResponse;
 import com.toongather.toongather.domain.webtoon.repository.GenreKeywordRepository;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
+import com.toongather.toongather.global.common.error.custom.WebtoonException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class WebtoonService {
     @Transactional
     public void updateWebtoon(Long toonId, WebtoonRequest request) {
         Webtoon webtoon = webtoonRepository.findById(toonId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 웹툰이 존재하지 않습니다."));
+                .orElseThrow(WebtoonException.WebtoonNotFoundException::new);
 
         List<GenreKeyword> genreKeywords = getGenreKeywords(request);
         webtoon.update(request.getAge(), request.getSummary(), request.getStatus(), genreKeywords);
@@ -46,7 +47,7 @@ public class WebtoonService {
     @Transactional
     public void deleteWebtoon(Long toonId) {
         Webtoon webtoon = webtoonRepository.findById(toonId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 웹툰이 존재하지 않습니다."));
+                .orElseThrow(WebtoonException.WebtoonNotFoundException::new);
 
         webtoonRepository.delete(webtoon);
     }
