@@ -12,7 +12,6 @@ import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
 import com.toongather.toongather.domain.review.dto.ReviewRecordDto;
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
-import com.toongather.toongather.domain.review.repository.ReviewRecordRepository;
 import com.toongather.toongather.domain.review.repository.ReviewRepository;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
@@ -43,9 +42,6 @@ public class ReviewService {
 
   @Autowired
   private WebtoonRepository webtoonRepository;
-
-  @Autowired
-  private ReviewRecordRepository reviewRecordRepository;
 
   @Autowired
   private KeywordService keywordService;
@@ -129,14 +125,14 @@ public class ReviewService {
   public Long createReview(CreateReviewRequest request) {
     // 멤버, 웹툰 엔티티조회
     Member member = memberService.findMemberEntityById(request.getMemberId());
-    Webtoon webtoon = webtoonRepository.findById(request.getToonId());
+    Webtoon webtoon = webtoonRepository.findById(request.getToonId()).get();
 
     // 리뷰 엔티티 생성
     Review review = request.toEntity(member, webtoon);
     Long reviewId = saveReview(review);
 
     // 키워드 여부 체크
-    if (!request.getKeywords().isEmpty()) {
+    if (request.getKeywords() != null) {
       for (String keywordNm : request.getKeywords()) {
         Keyword keyword = keywordService.createKeyword(keywordNm);
         reviewKeywordService.createReviewKeyword(review, keyword);
@@ -145,24 +141,22 @@ public class ReviewService {
     return reviewId;
   }
 
+  @Transactional
+  public Review createDefaultReview(Long memberId, Long toonId) {
+    Member member = memberService.findMemberEntityById(memberId);
+    Webtoon webtoon = webtoonRepository.findById(toonId).get();
+    Review review = Review.builder()
+        .toon(webtoon)
+        .member(member).build();
+    reviewRepository.save(review);
+    return review;
+  }
+
   /**
    * 특정 리뷰 조회
-   *
-   * @param reviewId 조회할 리뷰의 ID
-   * @return 리뷰 정보를 담은 DTO 객체
-   * @throws NoSuchElementException 리뷰가 존재하지 않을 경우 예외 발생
    */
-  public ReviewDto findById(Long reviewId) {
+  public Review findById(Long reviewId) {
     return reviewRepository.findById(reviewId)
-        .map(review ->
-            ReviewDto.builder()
-                .reviewDate(review.getRegDt())
-                .recommendComment(review.getRecommendComment())
-                .star(review.getStar())
-                .memberId(review.getMember().getId())
-                .toonId(review.getWebtoon().getToonId())
-                //.keywords(review.getKeywords())
-                .build())
         .orElseThrow(() -> new NoSuchElementException("리뷰를 찾을 수 없습니다: " + reviewId));
   }
 
@@ -187,23 +181,6 @@ public class ReviewService {
         reviewKeywordService.createReviewKeyword(review, keyword);
       }
     }
-  }
-
-  /*
-   * 나의 기록 리뷰 리스트 조회
-   * */
-  public List<ReviewRecordDto> findReviewRecordList(Long reviewId) {
-    List<ReviewRecord> reviewRecords = reviewRecordRepository.selectReviewRecordList(reviewId);
-    List<ReviewRecordDto> reviewRecordDtos = new ArrayList<>();
-    reviewRecords.forEach(reviewRecord -> {
-      reviewRecordDtos.add(
-          ReviewRecordDto.builder().reviewRecordId(reviewRecord.getReviewRecordId())
-              .reviewId(reviewRecord.getReview().getReviewId()).record(reviewRecord.getRecord())
-              .amdDt(reviewRecord.getAmdDt())
-              .build());
-    });
-
-    return reviewRecordDtos;
   }
 
 }

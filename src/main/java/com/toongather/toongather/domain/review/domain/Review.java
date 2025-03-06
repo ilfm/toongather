@@ -8,11 +8,14 @@ import com.toongather.toongather.global.common.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SequenceGenerator(
     name = "REVIEW_SEQ_GEN",
@@ -23,9 +26,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "REVIEW")
 public class Review extends BaseEntity {
-
-  public Review() {
-  }
 
   @GeneratedValue(strategy = GenerationType.SEQUENCE,
       generator = "REVIEW_SEQ_GEN")
@@ -76,7 +76,8 @@ public class Review extends BaseEntity {
   }
 
   @Builder
-  public Review(Webtoon toon, Member member, String recommendComment, Long star) {
+  public Review(Long reviewId, Webtoon toon, Member member, String recommendComment, Long star) {
+    this.reviewId = reviewId;
     this.webtoon = toon;
     this.member = member;
     this.recommendComment = recommendComment;
