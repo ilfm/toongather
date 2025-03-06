@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Transactional(readOnly = true)
 @Service
 public class ReviewKeywordService {
 
@@ -42,6 +42,13 @@ public class ReviewKeywordService {
 
   public List<KeywordDto> getKeywordsByReviewId(Long reviewId) {
     return reviewKeywordRepository.getKeywordsByReviewId(reviewId);
+  }
+
+  public boolean existsByReviewId(Long reviewId) {
+    if (reviewKeywordRepository.existsByReviewReviewId(reviewId)) {
+      return false;
+    }
+    return true;
   }
 
 }
