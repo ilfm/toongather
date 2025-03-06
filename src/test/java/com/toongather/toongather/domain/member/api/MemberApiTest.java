@@ -12,18 +12,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.MemberType;
-import com.toongather.toongather.domain.member.dto.JoinFormDTO;
+import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
 import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.MemberService;
+import com.toongather.toongather.global.common.error.CommonError;
+import com.toongather.toongather.global.common.error.CommonRuntimeException;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,26 +83,28 @@ class MemberApiTest {
   }
 
   @Test
+  @DisplayName("회원가입 시 정상적으로 등록된다")
   void 회원가입() throws Exception {
     //given
-    JoinFormDTO joinFormDTO = new JoinFormDTO();
-    joinFormDTO.setName("test");
-    joinFormDTO.setPhone("010-1234-5678");
-    joinFormDTO.setEmail("younie.jang@gmail.com");
-    joinFormDTO.setNickName("test");
-    joinFormDTO.setPassword("1234");
+    JoinFormRequest joinForm = new JoinFormRequest();
+    joinForm.setName("test");
+    joinForm.setPhone("010-1234-5678");
+    joinForm.setEmail("younie.jang@gmail.com");
+    joinForm.setNickName("test");
+    joinForm.setPassword("1234");
 
-    given(memberService.join(ArgumentMatchers.any(JoinFormDTO.class))).willReturn(1L);
+    given(memberService.join(ArgumentMatchers.any(JoinFormRequest.class))).willReturn(1L);
 
     //when
     //then
     mockMvc.perform(post("/member/join")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(new ObjectMapper().writeValueAsString(joinFormDTO)).with(csrf()))
+        .content(new ObjectMapper().writeValueAsString(joinForm)).with(csrf()))
         .andExpect(status().isOk())
         .andDo(result -> System.out.println(result.getResponse().getContentAsString()));
   }
   @Test
+  @DisplayName("로그인 시 정상적으로 로그인 된다")
   void 로그인_성공() throws Exception {
     //given
     LoginRequest request = new LoginRequest();
@@ -122,15 +127,16 @@ class MemberApiTest {
   }
 
   @Test
+  @DisplayName("잘못된 비밀번호로 인해 로그인이 실패한다")
   void 로그인_실패() throws Exception {
     //given
     LoginRequest request = new LoginRequest();
     request.setEmail("email@gmail.com");
-    request.setPassword("password");
+    request.setPassword("incorrect password");
 
     //when
     given(memberService.loginMember(request.getEmail(), request.getPassword()))
-        .willReturn(null);
+        .willThrow(new CommonRuntimeException(CommonError.USER_NOT_PASSWORD));
 
     //then
     mockMvc.perform(post("/member/login")
@@ -143,6 +149,7 @@ class MemberApiTest {
   }
 
   @Test
+  @DisplayName("로그인 시 이메일을 잘못 적어 로그인에 실패한다")
   void 로그인_검증_실패() throws Exception {
     //given
     LoginRequest request = new LoginRequest();
@@ -164,6 +171,7 @@ class MemberApiTest {
   }
 
   @Test
+  @DisplayName("임시회원인 경우 코드를 입력하여 임시회원 인증 서비스가 실행된다")
   void 임시회원_인증() throws Exception {
     //given
     member.setTempCode("tempCode");
@@ -180,6 +188,7 @@ class MemberApiTest {
   }
 
   @Test
+  @DisplayName("비밀번호와 이메일을 통해 회원이 존재하면 회원 정보를 응답값에 넘겨준다")
   void 회원_찾기() throws Exception{
     //given
     SearchMemberRequest request = new SearchMemberRequest();

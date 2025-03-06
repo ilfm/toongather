@@ -4,11 +4,13 @@ import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.MemberType;
 import com.toongather.toongather.domain.member.domain.Role;
 import com.toongather.toongather.domain.member.domain.RoleType;
-import com.toongather.toongather.domain.member.dto.JoinFormDTO;
+import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.member.repository.MemberRoleRepository;
 import com.toongather.toongather.domain.member.repository.RoleRepository;
+import com.toongather.toongather.global.common.error.CommonError;
+import com.toongather.toongather.global.common.error.CommonRuntimeException;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +39,7 @@ public class MemberService {
    * 회원가입
    */
   @Transactional
-  public Long join(JoinFormDTO dto) {
+  public Long join(JoinFormRequest dto) {
 
     //회원 저장
     Member member = Member.builder()
@@ -67,8 +69,9 @@ public class MemberService {
   public MemberDTO loginMember(String email, String password) {
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
     if (!passwordEncoder.matches(password, member.getPassword())) {
-      return null;
+      throw new CommonRuntimeException(CommonError.USER_NOT_PASSWORD);
     }
     return new MemberDTO(member);
   }
@@ -96,7 +99,7 @@ public class MemberService {
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
   }
-
+  
   public void resetPasswordByEmail(String email) {
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
@@ -108,6 +111,7 @@ public class MemberService {
 
   }
 
+  @Transactional
   public void confirmMemberByTempCode(Long id, String tempCode) {
     Member member = memberRepository.findById(id)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
@@ -122,6 +126,7 @@ public class MemberService {
     member.setMemberType(MemberType.ACTIVE);
   }
 
+  @Transactional
   public void reSendEmail(Long id) {
     Member member = memberRepository.findById(id)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
