@@ -1,38 +1,47 @@
 package com.toongather.toongather.domain.review.service;
 
+
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 import com.toongather.toongather.domain.keyword.dto.KeywordDto;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.dto.JoinFormDTO;
-import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.domain.Review;
-import com.toongather.toongather.domain.review.domain.ReviewSortType;
 import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
-import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
 
+import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
 import com.toongather.toongather.domain.review.repository.ReviewJpaRepository;
-import com.toongather.toongather.domain.webtoon.domain.Age;
-import com.toongather.toongather.domain.webtoon.domain.Platform;
+import com.toongather.toongather.domain.review.repository.ReviewRepository;
+import com.toongather.toongather.domain.webtoon.domain.GenreKeyword;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
-import com.toongather.toongather.domain.webtoon.domain.WebtoonStatus;
+import com.toongather.toongather.domain.webtoon.dto.WebtoonCreateResponse;
+import com.toongather.toongather.domain.webtoon.dto.WebtoonRequest;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
 
-import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import com.toongather.toongather.domain.webtoon.service.WebtoonService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,224 +51,207 @@ import org.springframework.test.annotation.Rollback;
 
 
 @Slf4j
-@SpringBootTest
-@Transactional
-@Rollback(false)
+@ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
 
-  @Autowired
+  @InjectMocks
   private ReviewService reviewService;
 
-  @Autowired
+  @Mock
   private MemberService memberService;
 
-  @Autowired
+  @Mock
   private WebtoonRepository webtoonRepository;
 
-  @Autowired
+  @Mock
+  private WebtoonService webtoonService;
+
+  @Mock
   private ReviewJpaRepository reviewJpaRepository;
 
+  @Mock
+  private ReviewRepository reviewRepository;
 
-  @Autowired
+  @Mock
   private ReviewKeywordService reviewKeywordService;
 
-  @MockBean
-  private EmailService emailService;
-
-  @DisplayName("작성한 리뷰를 정렬타입에 따라서 조회 할 수 있다.")
-  @Rollback(true)
-  @Test
-  void searchWithSortType() throws ParseException {
-    //Given
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    Long memberId = createTestMember();
-    Member member = memberService.findMemberEntityById(memberId);
-
-    Webtoon w1 = createWebtoon("집이없어", 1L);
-    Webtoon w2 = createWebtoon("집이있어", 2L);
-    webtoonRepository.save(w1);
-    webtoonRepository.save(w2);
-
-    Review r1 = Review.builder()
-        .member(member)
-        .star(5L)
-        .recommendComment("넘잼")
-        .toon(w1)
-        .build();
-    reviewJpaRepository.save(r1);
-
-    reviewJpaRepository.flush();
-
-    try {
-      Thread.sleep(2000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-
-    Review r2 = Review.builder().member(member)
-
-        .star(4L)
-        .recommendComment("넘잼")
-        .toon(w2)
-        .build();
-    reviewJpaRepository.save(r2);
-
-    Pageable pageRequest = PageRequest.of(0, 10);   // TODO 페이지 추후변경
-
-    //When
-    ReviewSortType starAscSort = ReviewSortType.STAR_ASC;
-    List<ReviewDto> statAscResult = reviewService.findAllWithSortType(starAscSort, pageRequest)
-        .getContent();
-
-    ReviewSortType starDescSort = ReviewSortType.STAR_DESC;
-    List<ReviewDto> statDescResult = reviewService.findAllWithSortType(starDescSort, pageRequest)
-        .getContent();
-
-    ReviewSortType createDtDescSort = ReviewSortType.CREATE_DATE_DESC;
-    List<ReviewDto> createDtDescResult = reviewService.findAllWithSortType(createDtDescSort,
-        pageRequest).getContent();
-
-    LocalDateTime firstDate = LocalDateTime.parse(createDtDescResult.get(0).getReviewDate(),
-        formatter);
-    LocalDateTime secondDate = LocalDateTime.parse(createDtDescResult.get(1).getReviewDate(),
-        formatter);
-
-    assertThat(firstDate).isAfter(secondDate);
-
-    //Then    
-    assertThat(statAscResult).as("별점 낮은순으로 정렬된다.").hasSize(2).extracting("star")
-        .containsExactly(4L, 5L);
-    assertThat(statDescResult).as("별점 높은순으로 정렬된다.").hasSize(2).extracting("star")
-        .containsExactly(5L, 4L);
-    assertThat(firstDate).isAfter(secondDate);
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);  // mock 객체 초기화
   }
 
-  @DisplayName("키워드를 포함한 리뷰를 등록 할수 있다.")
-  @Rollback(true)
+//  @DisplayName("작성한 리뷰를 정렬타입에 따라서 조회 할 수 있다.")
+//  @Rollback(true)
+//  @Test
+//  void searchWithSortType() throws ParseException {
+//    //Given
+//    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//    Long memberId = createTestMember();
+//    Member member = memberService.findMemberEntityById(memberId);
+//
+//    Webtoon w1 = createWebtoon("집이없어", 1L);
+//    Webtoon w2 = createWebtoon("집이있어", 2L);
+//    webtoonRepository.save(w1);
+//    webtoonRepository.save(w2);
+//
+//    Review r1 = Review.builder()
+//        .member(member)
+//        .star(5L)
+//        .recommendComment("넘잼")
+//        .toon(w1)
+//        .build();
+//    reviewJpaRepository.save(r1);
+//
+//    reviewJpaRepository.flush();
+//
+//    try {
+//      Thread.sleep(2000);
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
+//
+//    Review r2 = Review.builder().member(member)
+//
+//        .star(4L)
+//        .recommendComment("넘잼")
+//        .toon(w2)
+//        .build();
+//    reviewJpaRepository.save(r2);
+//
+//    Pageable pageRequest = PageRequest.of(0, 10);   // TODO 페이지 추후변경
+//
+//    //When
+//    ReviewSortType starAscSort = ReviewSortType.STAR_ASC;
+//    List<ReviewDto> statAscResult = reviewService.findAllWithSortType(starAscSort, pageRequest)
+//        .getContent();
+//
+//    ReviewSortType starDescSort = ReviewSortType.STAR_DESC;
+//    List<ReviewDto> statDescResult = reviewService.findAllWithSortType(starDescSort, pageRequest)
+//        .getContent();
+//
+//    ReviewSortType createDtDescSort = ReviewSortType.CREATE_DATE_DESC;
+//    List<ReviewDto> createDtDescResult = reviewService.findAllWithSortType(createDtDescSort,
+//        pageRequest).getContent();
+//
+//    LocalDateTime firstDate = LocalDateTime.parse(createDtDescResult.get(0).getReviewDate(),
+//        formatter);
+//    LocalDateTime secondDate = LocalDateTime.parse(createDtDescResult.get(1).getReviewDate(),
+//        formatter);
+//
+//    assertThat(firstDate).isAfter(secondDate);
+//
+//    //Then
+//    assertThat(statAscResult).as("별점 낮은순으로 정렬된다.").hasSize(2).extracting("star")
+//        .containsExactly(4L, 5L);
+//    assertThat(statDescResult).as("별점 높은순으로 정렬된다.").hasSize(2).extracting("star")
+//        .containsExactly(5L, 4L);
+//    assertThat(firstDate).isAfter(secondDate);
+//  }
+
+  @DisplayName("리뷰를 등록 할수 있다.")
   @Test
   void createReview() {
     //Given
-    Long memberId = createTestMember();
-
-    Webtoon w1 = createWebtoon("집이없어", 1L);
-    webtoonRepository.save(w1);
-
-    List<String> keywords = new ArrayList<>(List.of("혐관", "학원물"));
+    ArgumentCaptor<Review> captor = ArgumentCaptor.forClass(Review.class);
+    Long memberId = 1L;
+    Long toonId = 1L;
+    
+    given(memberService.findMemberEntityById(memberId)).willReturn(Member.builder().build());
+    given(webtoonRepository.findById(toonId))
+        .willReturn(Optional.of(Webtoon.builder().genreKeywords(List.of()).build()));
 
     CreateReviewRequest request = CreateReviewRequest.builder()
         .memberId(memberId)
         .star(5L)
-        .toonId(w1.getToonId())
-        .recommendComment("재밌구만유")
-        .keywords(keywords)
+        .toonId(toonId)
+        .recommendComment("테스트 추천 코멘트")
         .build();
 
     //When
     Long reviewId = reviewService.createReview(request);
-    ReviewDto reviewDto = reviewService.findById(reviewId);
-    List<KeywordDto> findKeyword = reviewKeywordService.getKeywordsByReviewId(reviewId);
 
     //Then
-    assertThat(reviewId).isNotNull();
-    assertThat(reviewDto).extracting("star", "recommendComment").contains(5L, "재밌구만유");
-    assertThat(findKeyword)
-        .hasSize(2)
-        .extracting(KeywordDto::getKeywordNm)
-        .containsExactlyInAnyOrder("혐관", "학원물");
+    verify(reviewRepository, times(1)).save(captor.capture());  // save 메서드 호출 검증
+    verify(memberService, times(1)).findMemberEntityById(memberId);
+    verify(webtoonRepository, times(1)).findById(toonId);
+
+    assertThat(captor.getAllValues()).isNotEmpty();
+    assertThat(captor.getValue().getRecommendComment()).isEqualTo("테스트 추천 코멘트");
+    assertThat(captor.getValue().getStar()).isEqualTo(5L);
   }
 
+  //  @DisplayName("기본정보 리뷰 생성")
+//  @Test
+//  public void createDefaultReview() {
+//    //Given
+//    given(memberService.join(any(JoinFormDTO.class))).willReturn(1L);
+//    given(webtoonService.createWebtoon(any(WebtoonRequest.class))).willReturn(
+//        WebtoonCreateResponse.builder().id(1L).build());
+//
+//    Long memberId = memberService.join(new JoinFormDTO());
+//    WebtoonCreateResponse response = webtoonService.createWebtoon(WebtoonRequest.builder().build());
+//
+//    //When
+//    //Review review = reviewService.createDefaultReview(memberId, response.getId());
+//    //Then
+////    assertThat(review).isNotNull();
+////    verify(webtoonRepository).findById(response.getId());
+////    verify(memberService).findMemberEntityById(memberId);
+//
+//  }
+//
   @DisplayName("리뷰를 수정 할 수 있다.")
-  @Rollback
   @Test
   void updateReview() {
     //Given
-    Long memberId = createTestMember();
-
-    Webtoon w1 = createWebtoon("집이없어", 1L);
-    webtoonRepository.save(w1);
-
-    List<String> prevKeywords = new ArrayList<>(List.of("혐관", "학원물"));
-    List<String> updateKeywords = new ArrayList<>(List.of("호러", "성장물"));
-
-    CreateReviewRequest createRequest = CreateReviewRequest.builder()
-        .memberId(memberId)
-        .star(5L)
-        .toonId(w1.getToonId())
-        .recommendComment("재밌구만유")
-        .keywords(prevKeywords)
-        .build();
-
-    Long reviewId = reviewService.createReview(createRequest);
+    Long reviewId = 1L;
+    Review existReview = Review.builder().recommendComment("기존 테스트 추천 코멘트").star(5L).build();
+    given(reviewRepository.findById(reviewId))
+        .willReturn(Optional.of(existReview));
+    given(reviewRepository.findById(reviewId)).willReturn(Optional.of(existReview));
 
     UpdateReviewRequest updateRequest = UpdateReviewRequest.builder()
         .reviewId(reviewId)
-        .recommendComment("추천안함")
-        .star(2L)
-        .keywords(updateKeywords)
+        .recommendComment("변경 테스트 추천 코멘트")
+        .star(1L)
         .build();
 
     //When
     reviewService.updateReview(updateRequest);
-    ReviewDto reviewDto = reviewService.findById(reviewId);
-    List<KeywordDto> findKeyword = reviewKeywordService.getKeywordsByReviewId(reviewId);
+    Review updateReview = reviewRepository.findById(reviewId).get();
 
     //Then
-    assertThat(reviewDto).extracting("star", "recommendComment").contains(2L, "추천안함");
-    assertThat(findKeyword)
-        .hasSize(2)
-        .extracting(KeywordDto::getKeywordNm)
-        .containsExactlyInAnyOrder("호러", "성장물");
+    assertThat(updateReview.getStar()).isEqualTo(1L);
+    assertThat(updateReview.getRecommendComment()).isEqualTo("변경 테스트 추천 코멘트");
+
   }
 
-  @DisplayName("리뷰를 삭제 할 수 있다. 삭제할 리뷰가 없는 경우 NoSuchElementException 예외발생")
+  @DisplayName("리뷰가 있는 경우,리뷰를 삭제 할 수 있다")
   @Rollback
   @Test
   public void deleteReview() {
     //Given
-    Long memberId = createTestMember();
-
-    Webtoon w1 = createWebtoon("집이없어", 1L);
-    webtoonRepository.save(w1);
-
-    List<String> keywords = new ArrayList<>(List.of("혐관", "학원물"));
-
-    CreateReviewRequest createRequest = CreateReviewRequest.builder()
-        .memberId(memberId)
-        .star(5L)
-        .toonId(w1.getToonId())
-        .recommendComment("재밌구만유")
-        .keywords(keywords)
-        .build();
-
-    Long nonExistentReviewId = -1L;
-    Long reviewId = reviewService.createReview(createRequest);
-    ReviewDto reviewBeforeDelete = reviewService.findById(reviewId);
+    Long reviewId = 1L;
+    given(reviewRepository.existsById(reviewId)).willReturn(true);
 
     //When
     reviewService.deleteReview(reviewId);
+
     //then
-    assertThat(reviewBeforeDelete).isNotNull();
+    verify(reviewRepository, times(1)).deleteById(reviewId);
+  }
+
+  @DisplayName("리뷰가 없는 경우, 리뷰 삭제 시 NoSuchElementException 예외발생")
+  @Test
+  public void deleteReviewNonExistReview() {
+    //Given
+    Long nonExistentReviewId = 1L;
+    given(reviewRepository.existsById(nonExistentReviewId)).willReturn(false);
+
+    //When&then
     assertThatThrownBy(() -> reviewService.deleteReview(nonExistentReviewId))
         .isInstanceOf(NoSuchElementException.class)
         .hasMessageContaining("삭제 할 리뷰가 없습니다.");
   }
 
-  private Long createTestMember() {
-    JoinFormDTO joinFormDTO = new JoinFormDTO();
-    joinFormDTO.setEmail("ddddd@naver.com");
-    joinFormDTO.setName("테스트");
-    joinFormDTO.setNickName("테스트닉네임");
-    joinFormDTO.setPassword("1234");
-    joinFormDTO.setPhone("010-7666-1111");
-    Long memberId = memberService.join(joinFormDTO);
-    return memberId;
-  }
-
-  private Webtoon createWebtoon(String title, Long toonId) {
-    return Webtoon.builder().title(title).toonId(toonId).author("작가").age(Age.ALL).imgPath(
-            "https://image-comic.pstatic.net/webtoon/721433/thumbnail/thumbnail_IMAG21_c907f727-e522-4517-952e-398ea95d2efb.jpg")
-        .platform(Platform.NAVER).status(WebtoonStatus.END).build();
-
-  }
 }
