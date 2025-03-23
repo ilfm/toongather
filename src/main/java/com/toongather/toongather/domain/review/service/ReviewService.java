@@ -20,6 +20,7 @@ import com.toongather.toongather.global.common.util.file.FileStore;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,12 +29,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
-
+@Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReviewService {
 
@@ -182,5 +184,32 @@ public class ReviewService {
       }
     }
   }
+
+  /*
+   * 나의 기록 리뷰 리스트 조회
+   * */
+  public List<ReviewRecordDto> findReviewRecordList(Long reviewId) {
+    List<ReviewRecord> reviewRecords = reviewRecordRepository.selectReviewRecordList(reviewId);
+    List<ReviewRecordDto> reviewRecordDtos = new ArrayList<>();
+    reviewRecords.forEach(reviewRecord -> {
+      reviewRecordDtos.add(
+          ReviewRecordDto.builder().reviewRecordId(reviewRecord.getReviewRecordId())
+              .reviewId(reviewRecord.getReview().getReviewId()).record(reviewRecord.getRecord())
+              .amdDt(reviewRecord.getAmdDt())
+              .build());
+    });
+
+    return reviewRecordDtos;
+  }
+
+  @Transactional
+  public void deleteReview(Long reviewId) {
+    if (!reviewRepository.existsById(reviewId)) {
+      throw new NoSuchElementException("삭제 할 리뷰가 없습니다.");
+    }
+    reviewKeywordService.deleteByReviewId(reviewId);
+    reviewRepository.deleteById(reviewId);
+  }
+
 
 }
