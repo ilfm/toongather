@@ -56,4 +56,8 @@ public class ReviewRecord extends BaseEntity {
 
   //@OneToMany(mappedBy = "reviewRecord")
   //private List<File> files = new ArrayList<>();
+
+  public void updateReviewRecord(String record) {
+    this.record = record;
+  }
 }
