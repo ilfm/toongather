@@ -2,7 +2,8 @@ package com.toongather.toongather.domain.review.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.toongather.toongather.domain.member.dto.JoinFormDTO;
+
+import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
@@ -67,7 +68,7 @@ class ReviewKeywordRepositoryTest {
   }
 
   private Long createTestMember() {
-    JoinFormDTO joinFormDTO = new JoinFormDTO();
+    JoinFormRequest joinFormDTO = new JoinFormRequest();
     joinFormDTO.setEmail("ddddd@naver.com");
     joinFormDTO.setName("테스트");
     joinFormDTO.setNickName("테스트닉네임");

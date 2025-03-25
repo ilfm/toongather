@@ -4,9 +4,11 @@ import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.domain.ReviewRecord;
 import com.toongather.toongather.domain.review.dto.CreateReviewRecordResponse;
 import com.toongather.toongather.domain.review.dto.ReviewRecordRequest;
+import com.toongather.toongather.domain.review.dto.ReviewRecordResponse;
 import com.toongather.toongather.domain.review.repository.ReviewRecordRepository;
-
-import java.util.NoSuchElementException;
+import com.toongather.toongather.global.common.error.custom.ReviewException.RecordNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,14 +25,22 @@ public class ReviewRecordService {
   @Autowired
   private ReviewService reviewService;
 
+  public ReviewRecord findById(Long reviewRecordId) {
+    return reviewRecordRepository.findById(reviewRecordId)
+        .orElseThrow(() -> new RecordNotFoundException());
+  }
+
+  public List<ReviewRecordResponse> findByReviewId(Long reviewId) {
+    List<ReviewRecord> reviewRecords = reviewRecordRepository.findByReviewReviewId(reviewId)
+        .orElseThrow(() -> new RecordNotFoundException());
+
+    return reviewRecords.stream().map(reviewRecord -> ReviewRecordResponse.from(reviewRecord))
+        .collect(Collectors.toList());
+  }
+
   @Transactional
   public ReviewRecord saveReviewRecord(ReviewRecord reviewRecord) {
     return reviewRecordRepository.save(reviewRecord);
-  }
-
-  public ReviewRecord findById(Long reviewRecordId) {
-    return reviewRecordRepository.findById(reviewRecordId)
-        .orElseThrow(() -> new NoSuchElementException("존재하지 않는 기록입니다."));
   }
 
   @Transactional

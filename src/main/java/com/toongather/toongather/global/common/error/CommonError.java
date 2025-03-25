@@ -15,7 +15,7 @@ public enum CommonError {
   JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT_REFRESH NEED"),
   JWT_DENIED(HttpStatus.UNAUTHORIZED, "JWT_DENIED"),
   USER_NOT_PASSWORD(HttpStatus.UNAUTHORIZED, "NOT_PASSWORD"),
-  USER_NOT_ACTIVE(HttpStatus.UNAUTHORIZED,  "NOT_ACTIVE_USER"),
+  USER_NOT_ACTIVE(HttpStatus.UNAUTHORIZED, "NOT_ACTIVE_USER"),
 
   //validation
   VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR"),
@@ -25,9 +25,12 @@ public enum CommonError {
   TEMP_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "임시번호가 만료되었습니다."),
 
   //webtoon
-  WEBTOON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 웹툰이 존재하지 않습니다.")
+  WEBTOON_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 웹툰이 존재하지 않습니다."),
 
-  ;
+  //review
+  REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰가 존재하지 않습니다."),
+  RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 기록이 존재하지 않습니다.");
+
   private final HttpStatus status;
   private final String message;
 
