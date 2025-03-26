@@ -1,12 +1,14 @@
 package com.toongather.toongather.domain.member.api;
 
+import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.MemberType;
-import com.toongather.toongather.domain.member.dto.JoinFormDTO;
+import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.LoginDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeDTO;
+import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
+import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeRequest;
 import com.toongather.toongather.domain.member.service.AuthService;
+import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.ApiResponse;
 import com.toongather.toongather.global.common.error.CommonError;
@@ -35,32 +37,36 @@ public class MemberApi {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberService memberService;
+  private final EmailService emailService;
   private final AuthService authService;
 
   @PostMapping("/join")
-  public Long join(@Valid @RequestBody JoinFormDTO dto) {
-    return memberService.join(dto);
+  public Long join(@Valid @RequestBody JoinFormRequest dto) {
+    Member member = memberService.join(dto);
+
+    if(member.getId() != null) {
+      emailService.sendEmail("tempcode", member.getTempCode(), member.getEmail());
+    }
+
+    return member.getId();
   }
 
   @PostMapping("/login")
-  public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginDTO request) {
+  public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequest request) {
 
     MemberDTO member = memberService.loginMember(request.getEmail(), request.getPassword());
-
-    if (member == null) {
-      throw new CommonRuntimeException(CommonError.USER_NOT_PASSWORD);
-    }
 
     if (member.getMemberType() == MemberType.TEMP) {
       throw new CommonRuntimeException(CommonError.USER_NOT_ACTIVE);
     }
+
 
     //로그인 성공 시, access token 생성
     HttpHeaders httpHeaders = authService.setAccessTokenHeader(member);
     //refresh token 생성 및 저장
     String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
     authService.updateTokenAndLoginHistoryById(member.getId(), refreshToken);
-    httpHeaders.add("Authorization", "Bearer " + refreshToken);
+    httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + refreshToken);
 
     ApiResponse<Object> result = ApiResponse.builder()
         .path("/member/login")
@@ -78,18 +84,18 @@ public class MemberApi {
    * @param request
    */
   @PostMapping("/confirm")
-  public void confirm(@RequestBody TempCodeDTO request) {
+  public void confirm(@RequestBody TempCodeRequest request) {
     memberService.confirmMemberByTempCode(request.getId(), request.getTempCode());
   }
 
   @GetMapping("/{id}/resend-email")
   public void reSendEmail(@PathVariable Long id) {
-    memberService.reSendEmail(id);
+    memberService.resendEmail(id);
   }
 
 
   @GetMapping("/search/members")
-  public ConcurrentMap<String, Object> searchMember(@RequestBody SearchMemberDTO member) {
+  public ConcurrentMap<String, Object> searchMember(@RequestBody SearchMemberRequest member) {
     return memberService.findMemberByNameAndPhone(member.getName(), member.getPhone());
   }
 
@@ -97,7 +103,8 @@ public class MemberApi {
   // 이메일로 비밀번호 초기화하기
   @GetMapping("/{email}/reset-password")
   public void resetPassword(@PathVariable String email) {
-    memberService.resetPasswordByEmail(email);
+    String password = memberService.resetPasswordByEmail(email);
+    emailService.sendEmail("resetpwd", password, email);
   }
 
 }

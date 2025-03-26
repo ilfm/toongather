@@ -5,7 +5,9 @@ import com.toongather.toongather.domain.member.domain.MemberType;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,8 +45,8 @@ public class MemberDTO {
 
   @Getter
   @Setter
-  public static class LoginDTO {
-    @NotEmpty
+  public static class LoginRequest {
+    @NotBlank
     @Email
     private String email;
     @NotEmpty
@@ -53,20 +55,20 @@ public class MemberDTO {
 
   @Getter
   @Setter
-  public static class TempCodeDTO {
-    @NotEmpty
+  public static class TempCodeRequest {
+    @NotBlank
     Long id;
 
-    @NotEmpty
+    @NotNull
     private String tempCode;
   }
 
   @Getter
   @Setter
-  public static class SearchMemberDTO {
-    @NotEmpty
+  public static class SearchMemberRequest {
+    @NotBlank
     private String name;
-    @NotEmpty
+    @NotBlank
     private String phone;
   }
 

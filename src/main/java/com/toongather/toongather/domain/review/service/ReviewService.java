@@ -12,7 +12,6 @@ import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
 import com.toongather.toongather.domain.review.dto.ReviewDto;
 import com.toongather.toongather.domain.review.dto.ReviewRecordDto;
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
-import com.toongather.toongather.domain.review.repository.ReviewRecordRepository;
 import com.toongather.toongather.domain.review.repository.ReviewRepository;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
@@ -46,9 +45,6 @@ public class ReviewService {
 
   @Autowired
   private WebtoonRepository webtoonRepository;
-
-  @Autowired
-  private ReviewRecordRepository reviewRecordRepository;
 
   @Autowired
   private KeywordService keywordService;
@@ -138,6 +134,7 @@ public class ReviewService {
     Review review = request.toEntity(member, webtoon);
     Long reviewId = saveReview(review);
 
+
 //    // 키워드 여부 체크
 //    if (!request.getKeywords().isEmpty()) {
 //      for (String keywordNm : request.getKeywords()) {
@@ -145,17 +142,25 @@ public class ReviewService {
 //        reviewKeywordService.createReviewKeyword(review, keyword);
 //      }
 //    }
+
     return reviewId;
+  }
+
+  @Transactional
+  public Review createDefaultReview(Long memberId, Long toonId) {
+    Member member = memberService.findMemberEntityById(memberId);
+    Webtoon webtoon = webtoonRepository.findById(toonId).get();
+    Review review = Review.builder()
+        .toon(webtoon)
+        .member(member).build();
+    reviewRepository.save(review);
+    return review;
   }
 
   /**
    * 특정 리뷰 조회
-   *
-   * @param reviewId 조회할 리뷰의 ID
-   * @return 리뷰 정보를 담은 DTO 객체
-   * @throws NoSuchElementException 리뷰가 존재하지 않을 경우 예외 발생
    */
-  public ReviewDto findById(Long reviewId) {
+  public Review findById(Long reviewId) {
     return reviewRepository.findById(reviewId)
         .map(review ->
             ReviewDto.builder()
@@ -223,5 +228,6 @@ public class ReviewService {
     //reviewKeywordService.deleteByReviewId(reviewId);
     reviewRepository.deleteById(reviewId);
   }
+
 
 }
