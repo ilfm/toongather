@@ -11,13 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toongather.toongather.domain.member.domain.Member;
-import com.toongather.toongather.domain.member.domain.MemberType;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
 import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.member.service.AuthService;
+import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.error.CommonError;
 import com.toongather.toongather.global.common.error.CommonRuntimeException;
@@ -54,27 +54,32 @@ class MemberApiTest {
   JwtTokenProvider jwtTokenProvider;
 
   @MockBean
+  EmailService emailService;
+
+  @MockBean
   AuthService authService;
 
   private MemberDTO member;
+
+  private Member memberEntity;
 
   private HttpHeaders httpHeaders;
 
   @BeforeEach
   void setUp() {
 
-    Member memberEntity = Member.builder()
+    memberEntity = Member.builder()
+        .memberId(1L)
         .name("test")
         .email("test@gmail.com")
         .phone("010-1234-5678")
         .password("1234")
         .nickName("test")
         .build();
-
-    memberEntity.setId(1L);
-    memberEntity.setMemberType(MemberType.ACTIVE);
+    memberEntity.updateActiveMember();
 
     member = new MemberDTO(memberEntity);
+
 
     httpHeaders = new HttpHeaders();
     httpHeaders.add("Authorization", "Bearer " + "token");
@@ -93,7 +98,7 @@ class MemberApiTest {
     joinForm.setNickName("test");
     joinForm.setPassword("1234");
 
-    given(memberService.join(ArgumentMatchers.any(JoinFormRequest.class))).willReturn(1L);
+    given(memberService.join(ArgumentMatchers.any(JoinFormRequest.class))).willReturn(memberEntity);
 
     //when
     //then

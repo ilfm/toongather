@@ -20,7 +20,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "MEMBER")
 @Entity
-@Getter @Setter
+@Getter
 @SequenceGenerator(
     name = "MEMBER_SEQ_GEN",
     sequenceName = "MEMBER_SEQ",
@@ -91,7 +90,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
   //생성자
   @Builder
-  public Member(String name, String password, String email, String phone, String nickName) {
+  public Member(Long memberId, String name, String password, String email, String phone, String nickName) {
+    this.id = memberId;
     this.name = name;
     this.email = email;
     this.phone = phone;
@@ -129,14 +129,21 @@ public class Member extends BaseTimeEntity implements UserDetails {
     this.tempCodeExpired = tempCodeExpired;
   }
 
+  public void updateActiveMember() {
+    this.memberType = MemberType.ACTIVE;
+    this.updateTempCode(null, null);
+  }
+
+  public void resetPassword(String password) {
+    this.password = password;
+  }
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
 
-    List<SimpleGrantedAuthority> collect = memberRoles.stream()
+    return memberRoles.stream()
         .map(entity -> new SimpleGrantedAuthority(entity.getRole().getName().name()))
         .collect(Collectors.toList());
-
-    return collect;
   }
 
   @Override
