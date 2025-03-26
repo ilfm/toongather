@@ -5,8 +5,10 @@ import com.toongather.toongather.domain.keyword.dto.KeywordDto;
 import com.toongather.toongather.domain.keyword.repository.KeywordRepository;
 import java.util.Optional;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class KeywordService {
@@ -19,7 +21,7 @@ public class KeywordService {
   }
 
   @Transactional
-  public Long saveKeyword(Keyword keyword) {
+  private Long saveKeyword(Keyword keyword) {
     if (keyword.getKeywordId() == null) {
       keywordRepository.save(keyword);
     }

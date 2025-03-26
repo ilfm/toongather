@@ -48,7 +48,7 @@ public class AuthApi {
       case EXPIRED :
         return new ResponseEntity("login need", HttpStatus.UNAUTHORIZED);
       case ACCESS :
-        MemberDTO member = memberService.findMemberById(id);
+        MemberDTO member = memberService.findMemberWithRoleById(id);
         //access token 발급
         if(member.getRefreshToken().equals(tokens.getRefreshToken())) {
           HttpHeaders httpHeaders = authService.setAccessTokenHeader(member);
