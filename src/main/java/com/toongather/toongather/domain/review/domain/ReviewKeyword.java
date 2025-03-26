@@ -37,11 +37,7 @@ public class ReviewKeyword extends BaseEntity {
   @JoinColumn(name = "keywordId", foreignKey = @ForeignKey(name = "fk_reviewkeword_to_keyword"))
   private Keyword keyword;
 
-  public Long getReviewKeywordId() {
-    return reviewKeywordId;
-  }
-
-  public static ReviewKeyword createReviewKeyword(Review review, Keyword keyword){
+  public static ReviewKeyword createReviewKeyword(Review review, Keyword keyword) {
     return ReviewKeyword.builder()
         .review(review)
         .keyword(keyword)
