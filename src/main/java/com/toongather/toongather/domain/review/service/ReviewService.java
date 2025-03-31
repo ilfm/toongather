@@ -1,24 +1,23 @@
 package com.toongather.toongather.domain.review.service;
 
 
-import com.toongather.toongather.domain.keyword.domain.Keyword;
 import com.toongather.toongather.domain.keyword.service.KeywordService;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.domain.ReviewSortType;
 import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
-import com.toongather.toongather.domain.review.dto.ReviewDto;
+import com.toongather.toongather.domain.review.dto.SearchReviewResponse;
 import com.toongather.toongather.domain.review.dto.ReviewShareRequest;
 import com.toongather.toongather.domain.review.dto.ReviewShareResponse;
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
 import com.toongather.toongather.domain.review.repository.ReviewRepository;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
+import com.toongather.toongather.global.common.error.custom.ReviewException.ReviewNotFoundException;
 import com.toongather.toongather.global.common.util.file.FileStore;
 
 
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,8 @@ public class ReviewService {
   private final FileStore fileStore;
   private final int REVIEW_PAGE_SIZE = 10;
 
-  public Page<ReviewDto> findAllWithSortType(ReviewSortType reviewSortType, Pageable pageable) {
+  public Page<SearchReviewResponse> findAllWithSortType(ReviewSortType reviewSortType,
+      Pageable pageable) {
 
     Sort sort;
     if (reviewSortType == null) {
@@ -86,7 +86,7 @@ public class ReviewService {
         sort);   // TODO 페이지 추후변경
 
     return reviewRepository.findAll(pageRequest)
-        .map(review -> ReviewDto.builder()
+        .map(review -> SearchReviewResponse.builder()
             .title(review.getWebtoon().getTitle())
             .recommendComment(review.getRecommendComment())
             .imgPath(review.getWebtoon().getImgPath())
@@ -111,22 +111,11 @@ public class ReviewService {
 
   @Transactional
   public Long createReview(CreateReviewRequest request) {
-    // 멤버, 웹툰 엔티티조회
     Member member = memberService.findMemberEntityById(request.getMemberId());
     Webtoon webtoon = webtoonRepository.findById(request.getToonId()).get();
 
-    // 리뷰 엔티티 생성
     Review review = request.toEntity(member, webtoon);
     Long reviewId = saveReview(review);
-
-//    // 키워드 여부 체크
-//    if (!request.getKeywords().isEmpty()) {
-//      for (String keywordNm : request.getKeywords()) {
-//        Keyword keyword = keywordService.createKeyword(keywordNm);
-//        reviewKeywordService.createReviewKeyword(review, keyword);
-//      }
-//    }
-
     return reviewId;
   }
 
@@ -134,6 +123,7 @@ public class ReviewService {
   public Review createDefaultReview(Long memberId, Long toonId) {
     Member member = memberService.findMemberEntityById(memberId);
     Webtoon webtoon = webtoonRepository.findById(toonId).get();
+
     Review review = Review.builder()
         .toon(webtoon)
         .member(member).build();
@@ -143,34 +133,22 @@ public class ReviewService {
 
   public Review findById(Long reviewId) {
     return reviewRepository.findById(reviewId)
-        .orElseThrow(() -> new NoSuchElementException("리뷰를 찾을 수 없습니다: " + reviewId));
+        .orElseThrow(() -> new ReviewNotFoundException());
   }
 
   @Transactional
   public void updateReview(UpdateReviewRequest request) {
     Review review = reviewRepository.findById(request.getReviewId())
-        .orElseThrow(() -> new NoSuchElementException("리뷰를 찾을 수 없습니다: " + request.getReviewId()));
+        .orElseThrow(() -> new ReviewNotFoundException());
     review.updateReview(request.getRecommendComment(), request.getStar());
-
-//    if (request.getKeywords().isEmpty()) {
-//      reviewKeywordService.deleteByReviewId(request.getReviewId());
-//    } else {
-//      reviewKeywordService.deleteByReviewId(request.getReviewId());
-//      for (String keywordNm : request.getKeywords()) {
-//        Keyword keyword = keywordService.createKeyword(keywordNm);
-//        reviewKeywordService.createReviewKeyword(review, keyword);
-//      }
-//    }
   }
 
   @Transactional
   public void deleteReview(Long reviewId) {
     if (!reviewRepository.existsById(reviewId)) {
-      throw new NoSuchElementException("삭제 할 리뷰가 없습니다.");
+      throw new ReviewNotFoundException();
     }
     //reviewKeywordService.deleteByReviewId(reviewId);
     reviewRepository.deleteById(reviewId);
   }
-
-
 }

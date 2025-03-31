@@ -5,22 +5,20 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import com.toongather.toongather.domain.member.domain.Member;
-
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
 
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
+import com.toongather.toongather.domain.review.repository.ReviewJpaRepository;
 import com.toongather.toongather.domain.review.repository.ReviewRepository;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
 
 import com.toongather.toongather.domain.webtoon.service.WebtoonService;
-import groovy.util.logging.Slf4j;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +34,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.Rollback;
 
 
-@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
 
@@ -51,7 +48,10 @@ public class ReviewServiceTest {
 
   @Mock
   private WebtoonService webtoonService;
-  
+
+  @Mock
+  private ReviewJpaRepository reviewJpaRepository;
+
   @Mock
   private ReviewRepository reviewRepository;
 
@@ -105,15 +105,15 @@ public class ReviewServiceTest {
 //
 //    //When
 //    ReviewSortType starAscSort = ReviewSortType.STAR_ASC;
-//    List<ReviewDto> statAscResult = reviewService.findAllWithSortType(starAscSort, pageRequest)
+//    List<SearchReviewResponse> statAscResult = reviewService.findAllWithSortType(starAscSort, pageRequest)
 //        .getContent();
 //
 //    ReviewSortType starDescSort = ReviewSortType.STAR_DESC;
-//    List<ReviewDto> statDescResult = reviewService.findAllWithSortType(starDescSort, pageRequest)
+//    List<SearchReviewResponse> statDescResult = reviewService.findAllWithSortType(starDescSort, pageRequest)
 //        .getContent();
 //
 //    ReviewSortType createDtDescSort = ReviewSortType.CREATE_DATE_DESC;
-//    List<ReviewDto> createDtDescResult = reviewService.findAllWithSortType(createDtDescSort,
+//    List<SearchReviewResponse> createDtDescResult = reviewService.findAllWithSortType(createDtDescSort,
 //        pageRequest).getContent();
 //
 //    LocalDateTime firstDate = LocalDateTime.parse(createDtDescResult.get(0).getReviewDate(),

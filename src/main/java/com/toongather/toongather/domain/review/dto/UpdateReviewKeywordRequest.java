@@ -1,4 +1,4 @@
-package com.toongather.toongather.domain.review.dto.request;
+package com.toongather.toongather.domain.review.dto;
 
 import java.util.List;
 import lombok.Builder;
