@@ -1,5 +1,6 @@
 package com.toongather.toongather.domain.member.api;
 
+import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.MemberType;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO;
@@ -7,6 +8,7 @@ import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
 import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeRequest;
 import com.toongather.toongather.domain.member.service.AuthService;
+import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.ApiResponse;
 import com.toongather.toongather.global.common.error.CommonError;
@@ -35,11 +37,18 @@ public class MemberApi {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberService memberService;
+  private final EmailService emailService;
   private final AuthService authService;
 
   @PostMapping("/join")
   public Long join(@Valid @RequestBody JoinFormRequest dto) {
-    return memberService.join(dto);
+    Member member = memberService.join(dto);
+
+    if(member.getId() != null) {
+      emailService.sendEmail("tempcode", member.getTempCode(), member.getEmail());
+    }
+
+    return member.getId();
   }
 
   @PostMapping("/login")
@@ -50,6 +59,7 @@ public class MemberApi {
     if (member.getMemberType() == MemberType.TEMP) {
       throw new CommonRuntimeException(CommonError.USER_NOT_ACTIVE);
     }
+
 
     //로그인 성공 시, access token 생성
     HttpHeaders httpHeaders = authService.setAccessTokenHeader(member);
@@ -80,7 +90,7 @@ public class MemberApi {
 
   @GetMapping("/{id}/resend-email")
   public void reSendEmail(@PathVariable Long id) {
-    memberService.reSendEmail(id);
+    memberService.resendEmail(id);
   }
 
 
@@ -93,7 +103,8 @@ public class MemberApi {
   // 이메일로 비밀번호 초기화하기
   @GetMapping("/{email}/reset-password")
   public void resetPassword(@PathVariable String email) {
-    memberService.resetPasswordByEmail(email);
+    String password = memberService.resetPasswordByEmail(email);
+    emailService.sendEmail("resetpwd", password, email);
   }
 
 }

@@ -119,13 +119,15 @@ public class ReviewService {
     Review review = request.toEntity(member, webtoon);
     Long reviewId = saveReview(review);
 
-    // 키워드 여부 체크
-    if (request.getKeywords() != null) {
-      for (String keywordNm : request.getKeywords()) {
-        Keyword keyword = keywordService.createKeyword(keywordNm);
-        reviewKeywordService.createReviewKeyword(review, keyword);
-      }
-    }
+
+//    // 키워드 여부 체크
+//    if (!request.getKeywords().isEmpty()) {
+//      for (String keywordNm : request.getKeywords()) {
+//        Keyword keyword = keywordService.createKeyword(keywordNm);
+//        reviewKeywordService.createReviewKeyword(review, keyword);
+//      }
+//    }
+
     return reviewId;
   }
 
@@ -142,6 +144,17 @@ public class ReviewService {
 
   public Review findById(Long reviewId) {
     return reviewRepository.findById(reviewId)
+        .map(review ->
+            ReviewDto.builder()
+                .reviewDate(review.getRegDt())
+                .recommendComment(review.getRecommendComment())
+                .star(review.getStar())
+                .memberId(review.getMember().getId())
+                .toonId(review.getWebtoon().getToonId())
+                .keywords(review.getKeywords().stream()
+                    .map(reviewKeyword -> reviewKeyword.getKeyword().getKeywordNm())
+                    .collect(Collectors.toList()))
+                .build())
         .orElseThrow(() -> new NoSuchElementException("리뷰를 찾을 수 없습니다: " + reviewId));
   }
 
@@ -151,15 +164,15 @@ public class ReviewService {
         .orElseThrow(() -> new NoSuchElementException("리뷰를 찾을 수 없습니다: " + request.getReviewId()));
     review.updateReview(request.getRecommendComment(), request.getStar());
 
-    if (request.getKeywords().isEmpty()) {
-      reviewKeywordService.deleteByReviewId(request.getReviewId());
-    } else {
-      reviewKeywordService.deleteByReviewId(request.getReviewId());
-      for (String keywordNm : request.getKeywords()) {
-        Keyword keyword = keywordService.createKeyword(keywordNm);
-        reviewKeywordService.createReviewKeyword(review, keyword);
-      }
-    }
+//    if (request.getKeywords().isEmpty()) {
+//      reviewKeywordService.deleteByReviewId(request.getReviewId());
+//    } else {
+//      reviewKeywordService.deleteByReviewId(request.getReviewId());
+//      for (String keywordNm : request.getKeywords()) {
+//        Keyword keyword = keywordService.createKeyword(keywordNm);
+//        reviewKeywordService.createReviewKeyword(review, keyword);
+//      }
+//    }
   }
 
   @Transactional
@@ -167,7 +180,7 @@ public class ReviewService {
     if (!reviewRepository.existsById(reviewId)) {
       throw new NoSuchElementException("삭제 할 리뷰가 없습니다.");
     }
-    reviewKeywordService.deleteByReviewId(reviewId);
+    //reviewKeywordService.deleteByReviewId(reviewId);
     reviewRepository.deleteById(reviewId);
   }
 
