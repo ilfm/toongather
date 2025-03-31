@@ -30,7 +30,6 @@ public class ReviewKeywordService {
   @Autowired
   private final ReviewService reviewService;
 
-
   @Transactional
   private Long saveReviewKeyword(ReviewKeyword reviewKeyword) {
     if (reviewKeyword.getReviewKeywordId() == null) {
@@ -48,14 +47,14 @@ public class ReviewKeywordService {
   public void createReviewKeyword(CreateReviewKeywordRequest request) {
     for (String keywordNm : request.getKeywords()) {
       Keyword keyword = keywordService.createKeyword(keywordNm);
-      Review review = reviewService.findEntityById(request.getReviewId());
+      Review review = reviewService.findById(request.getReviewId());
       saveReviewKeyword(ReviewKeyword.createReviewKeyword(review, keyword));
     }
   }
 
   @Transactional
   public void updateReviewKeyword(CreateReviewKeywordRequest request) {
-    Review review = reviewService.findEntityById(request.getReviewId());
+    Review review = reviewService.findById(request.getReviewId());
     // 기존 등록된 리뷰 키워드
     List<ReviewKeyword> existingReviewKeywords = reviewKeywordRepository.findByReviewReviewId(
         request.getReviewId());

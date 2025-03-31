@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class ReviewDto {
+public class SearchReviewResponse {
 
   private Long reviewId;
   private Long memberId;
@@ -22,7 +22,7 @@ public class ReviewDto {
   private String reviewDate;
   private List<String> keywords;
 
-  public ReviewDto(Long reviewId, String title, Long star, String imgPath,
+  public SearchReviewResponse(Long reviewId, String title, Long star, String imgPath,
       String recommendComment, String reviewDate, List<String> keywords) {
     this.reviewId = reviewId;
     this.title = title;

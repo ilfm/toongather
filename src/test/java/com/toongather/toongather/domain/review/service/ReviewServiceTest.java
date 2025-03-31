@@ -4,30 +4,21 @@ package com.toongather.toongather.domain.review.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import com.toongather.toongather.domain.keyword.dto.KeywordDto;
 import com.toongather.toongather.domain.member.domain.Member;
-import com.toongather.toongather.domain.member.dto.JoinFormDTO;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
-import com.toongather.toongather.domain.review.dto.ReviewDto;
 
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
 import com.toongather.toongather.domain.review.repository.ReviewJpaRepository;
 import com.toongather.toongather.domain.review.repository.ReviewRepository;
-import com.toongather.toongather.domain.webtoon.domain.GenreKeyword;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonCreateResponse;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonRequest;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
 
 import com.toongather.toongather.domain.webtoon.service.WebtoonService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import javax.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,21 +27,13 @@ import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 
-@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
 
@@ -122,15 +105,15 @@ public class ReviewServiceTest {
 //
 //    //When
 //    ReviewSortType starAscSort = ReviewSortType.STAR_ASC;
-//    List<ReviewDto> statAscResult = reviewService.findAllWithSortType(starAscSort, pageRequest)
+//    List<SearchReviewResponse> statAscResult = reviewService.findAllWithSortType(starAscSort, pageRequest)
 //        .getContent();
 //
 //    ReviewSortType starDescSort = ReviewSortType.STAR_DESC;
-//    List<ReviewDto> statDescResult = reviewService.findAllWithSortType(starDescSort, pageRequest)
+//    List<SearchReviewResponse> statDescResult = reviewService.findAllWithSortType(starDescSort, pageRequest)
 //        .getContent();
 //
 //    ReviewSortType createDtDescSort = ReviewSortType.CREATE_DATE_DESC;
-//    List<ReviewDto> createDtDescResult = reviewService.findAllWithSortType(createDtDescSort,
+//    List<SearchReviewResponse> createDtDescResult = reviewService.findAllWithSortType(createDtDescSort,
 //        pageRequest).getContent();
 //
 //    LocalDateTime firstDate = LocalDateTime.parse(createDtDescResult.get(0).getReviewDate(),
@@ -155,7 +138,7 @@ public class ReviewServiceTest {
     ArgumentCaptor<Review> captor = ArgumentCaptor.forClass(Review.class);
     Long memberId = 1L;
     Long toonId = 1L;
-    
+
     given(memberService.findMemberEntityById(memberId)).willReturn(Member.builder().build());
     given(webtoonRepository.findById(toonId))
         .willReturn(Optional.of(Webtoon.builder().genreKeywords(List.of()).build()));
