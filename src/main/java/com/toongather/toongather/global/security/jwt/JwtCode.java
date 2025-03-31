@@ -9,11 +9,7 @@ public enum JwtCode {
 
     EXPIRED("만료된 JWT"),
     ACCESS("인증된 JWT"),
-    DENIED("조작되거나 지원되지 않는 토큰"),
-
-    REFRESH_TOKEN("refresh token"),
-    ACCESS_TOKEN("access token");
-
+    DENIED("조작되거나 지원되지 않는 토큰");
 
   private final String message;
 

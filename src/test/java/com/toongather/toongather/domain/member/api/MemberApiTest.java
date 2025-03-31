@@ -12,9 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberRequest.LoginRequest;
+import com.toongather.toongather.domain.member.dto.MemberRequest.SearchMemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberResponse;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.EmailService;
@@ -59,7 +60,7 @@ class MemberApiTest {
   @MockBean
   AuthService authService;
 
-  private MemberDTO member;
+  private MemberRequest member;
 
   private Member memberEntity;
 
@@ -78,7 +79,7 @@ class MemberApiTest {
         .build();
     memberEntity.updateActiveMember();
 
-    member = new MemberDTO(memberEntity);
+    member = new MemberRequest(memberEntity);
 
 
     httpHeaders = new HttpHeaders();
@@ -108,6 +109,7 @@ class MemberApiTest {
         .andExpect(status().isOk())
         .andDo(result -> System.out.println(result.getResponse().getContentAsString()));
   }
+
   @Test
   @DisplayName("로그인 시 정상적으로 로그인 된다")
   void 로그인_성공() throws Exception {
@@ -218,7 +220,28 @@ class MemberApiTest {
 
   }
 
+  @DisplayName("회원 정보를 성공적으로 가져온다")
+  @Test
+  void 회원_정보_가져오기() throws Exception {
+    //given
+    Long id = 1L;
+    MemberResponse result = MemberResponse.from(memberEntity);
 
+    //when
+    given(memberService.findMemberById(id)).willReturn(result);
+
+    //then
+    mockMvc.perform(get("/member/" + id)
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.id").value(result.getId()))
+        .andExpect(jsonPath("$.data.email").value(result.getEmail()))
+        .andExpect(jsonPath("$.data.name").value(result.getName()))
+        .andExpect(jsonPath("$.data.phone").value(result.getPhone()))
+        .andExpect(jsonPath("$.data.nickname").value(result.getNickname()));
+
+  }
 
 
 
