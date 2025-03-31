@@ -119,7 +119,6 @@ public class ReviewService {
     Review review = request.toEntity(member, webtoon);
     Long reviewId = saveReview(review);
 
-
 //    // 키워드 여부 체크
 //    if (!request.getKeywords().isEmpty()) {
 //      for (String keywordNm : request.getKeywords()) {
@@ -144,17 +143,6 @@ public class ReviewService {
 
   public Review findById(Long reviewId) {
     return reviewRepository.findById(reviewId)
-        .map(review ->
-            ReviewDto.builder()
-                .reviewDate(review.getRegDt())
-                .recommendComment(review.getRecommendComment())
-                .star(review.getStar())
-                .memberId(review.getMember().getId())
-                .toonId(review.getWebtoon().getToonId())
-                .keywords(review.getKeywords().stream()
-                    .map(reviewKeyword -> reviewKeyword.getKeyword().getKeywordNm())
-                    .collect(Collectors.toList()))
-                .build())
         .orElseThrow(() -> new NoSuchElementException("리뷰를 찾을 수 없습니다: " + reviewId));
   }
 
