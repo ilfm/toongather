@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
   Optional<Member> findByEmail(String email);
+
   @EntityGraph(attributePaths = {"memberRoles"})
   @Query("select m from Member m where m.id = :id")
   Optional<Member> findMemberWithRole(@Param("id") Long id);

@@ -4,7 +4,8 @@ import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.Role;
 import com.toongather.toongather.domain.member.domain.RoleType;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO;
+import com.toongather.toongather.domain.member.dto.MemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberResponse;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.member.repository.MemberRoleRepository;
 import com.toongather.toongather.domain.member.repository.RoleRepository;
@@ -52,7 +53,6 @@ public class MemberService {
     Role role = roleRepository.findByName(RoleType.ROLE_USER);
     member.addMemberRoles(role);
     Member savedMember = memberRepository.save(member);
-    memberRoleRepository.saveAll(member.getMemberRoles());
 
     //인증 메일 보내기
     LocalDateTime now = LocalDateTime.now();
@@ -63,14 +63,14 @@ public class MemberService {
     return savedMember;
   }
 
-  public MemberDTO loginMember(String email, String password) {
+  public MemberRequest loginMember(String email, String password) {
     Member member = memberRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
     if (!passwordEncoder.matches(password, member.getPassword())) {
       throw new CommonRuntimeException(CommonError.USER_NOT_PASSWORD);
     }
-    return new MemberDTO(member);
+    return new MemberRequest(member);
   }
 
 
@@ -85,10 +85,10 @@ public class MemberService {
     return result;
   }
 
-  public MemberDTO findMemberWithRoleById(Long id) {
+  public MemberRequest findMemberWithRoleById(Long id) {
     Member member = memberRepository.findMemberWithRole(id)
         .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-    return new MemberDTO(member);
+    return new MemberRequest(member);
   }
 
   public Member findMemberEntityById(Long id) {
@@ -136,6 +136,14 @@ public class MemberService {
     emailService.sendEmail("tempcode", tempCode, member.getEmail());
   }
 
+
+  public MemberResponse findMemberById(Long id) {
+    Member member = memberRepository.findById(id)
+        .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+    return MemberResponse.from(member);
+  }
+
   // 인증번호 및 임시 비밀번호 생성 메서드
   public String createCode() {
     Random random = new Random();
@@ -152,5 +160,6 @@ public class MemberService {
     }
     return key.toString();
   }
+
 
 }

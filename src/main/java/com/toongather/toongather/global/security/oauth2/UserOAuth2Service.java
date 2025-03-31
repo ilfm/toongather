@@ -8,6 +8,9 @@ import com.toongather.toongather.domain.member.domain.RoleType;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.member.repository.MemberRoleRepository;
 import com.toongather.toongather.domain.member.repository.RoleRepository;
+import com.toongather.toongather.global.security.oauth2.OAuth2Provider.Google;
+import com.toongather.toongather.global.security.oauth2.OAuth2Provider.Kakao;
+import com.toongather.toongather.global.security.oauth2.OAuth2Provider.Naver;
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +47,6 @@ public class UserOAuth2Service extends DefaultOAuth2UserService {
       Role role = roleRepository.findByName(RoleType.ROLE_USER);
       member.addMemberRoles(role);
       memberRepository.save(member);
-      memberRoleRepository.saveAll(member.getMemberRoles());
     }
     return new DefaultOAuth2User(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")),
         oAuth2User.getAttributes(),
@@ -54,47 +56,40 @@ public class UserOAuth2Service extends DefaultOAuth2UserService {
   }
 
   public Member makeUserByOAuthUser(Map<String, Object> attributes, String snsType) {
-    Member member = null;
-    switch (snsType) {
-      case "google":
-        member = ofGoogle(attributes);
-        break;
-      case "naver":
-        member = ofNaver((Map<String, Object>) attributes.get("response"));
-        break;
-      case "kakao":
-        member = ofKakao((Map<String, Object>) attributes.get("kakao_account"));
-        break;
-    }
 
-    return member;
+    return switch (snsType) {
+      case Google.PROVIDER_NAME -> ofGoogle(attributes);
+      case Naver.PROVIDER_NAME -> ofNaver((Map<String, Object>) attributes.get(Naver.WRAPPER));
+      case Kakao.PROVIDER_NAME -> ofKakao((Map<String, Object>) attributes.get(Kakao.WRAPPER));
+      default -> null;
+    };
   }
 
   private Member ofGoogle(Map<String, Object> attributes) {
     return Member.OAuthBuilder()
-        .name(String.valueOf(attributes.get("name")))
-        .email(String.valueOf(attributes.get("email")))
-        .nickName(String.valueOf(attributes.get("given_name")))
+        .name(String.valueOf(attributes.get(Google.SCOPE_NAME)))
+        .email(String.valueOf(attributes.get(Google.SCOPE_EMAIL)))
+        .nickName(String.valueOf(attributes.get(Google.SCOPE_NICKNAME)))
         .joinType(JoinType.GOOGLE)
         .build();
   }
 
   private Member ofNaver(Map<String, Object> attributes) {
     return Member.OAuthBuilder()
-        .name(String.valueOf(attributes.get("name")))
-        .email(String.valueOf(attributes.get("email")))
-        .nickName(String.valueOf(attributes.get("nickname")))
+        .name(String.valueOf(attributes.get(Naver.SCOPE_NAME)))
+        .email(String.valueOf(attributes.get(Naver.SCOPE_EMAIL)))
+        .nickName(String.valueOf(attributes.get(Naver.SCOPE_NICKNAME)))
         .joinType(JoinType.NAVER)
         .build();
   }
 
   private Member ofKakao(Map<String, Object> attributes) {
-    Map<String, Object> properties = (Map<String, Object>) attributes.get("profile");
+    Map<String, Object> properties = (Map<String, Object>) attributes.get(Kakao.PROFILE);
 
     return Member.OAuthBuilder()
-        .name(String.valueOf(properties.get("nickname")))
-        .email(String.valueOf(attributes.get("email")))
-        .nickName(String.valueOf(properties.get("nickname")))
+        .name(String.valueOf(properties.get(Kakao.SCOPE_NAME)))
+        .email(String.valueOf(attributes.get(Kakao.SCOPE_EMAIL)))
+        .nickName(String.valueOf(properties.get(Kakao.SCOPE_NICKNAME)))
         .joinType(JoinType.KAKAO)
         .build();
   }

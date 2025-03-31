@@ -4,7 +4,6 @@ import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.review.domain.Review;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import java.util.List;
-import javassist.compiler.ast.Keyword;
 import lombok.Builder;
 import lombok.Getter;
 

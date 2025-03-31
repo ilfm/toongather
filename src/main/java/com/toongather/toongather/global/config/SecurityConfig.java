@@ -7,31 +7,27 @@ import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.toongather.toongather.global.security.oauth2.UserOAuth2Service;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity // 기본적인 웹보안 활성화
-@EnableGlobalMethodSecurity(prePostEnabled = true) //@preAuthorize 어노테이션 메소드단위로 추가하기위함
 public class SecurityConfig {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-  private final CorsFilter corsFilter;
 
   private final UserOAuth2Service userOAuth2Service;
 
@@ -39,73 +35,65 @@ public class SecurityConfig {
 
   private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
+  private final String[] PERMIT_ALL = {"/member/join", "/member/login", "/oauth2/**"};
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-    return authenticationConfiguration.getAuthenticationManager();
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    //cors
+    http.cors(httpSecurityCorsConfigurer ->
+      httpSecurityCorsConfigurer.configurationSource(request -> {
+      var cors = new CorsConfiguration();
+      cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+      cors.setAllowedHeaders(List.of("*"));
+      return cors;
+    }));
+
+    //jwt 토큰 방식으로 로그인
+    http.sessionManagement(httpSessionManagement ->
+        httpSessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+    //crsf, 로그인에서 formlogin, formbasic 방식 제외
+    http.csrf(AbstractHttpConfigurer::disable);
+    http.formLogin(AbstractHttpConfigurer::disable);
+    http.httpBasic(AbstractHttpConfigurer::disable);
+
+    //url 권한 관리
+    http.authorizeHttpRequests(authz -> {
+      authz.requestMatchers(PERMIT_ALL).permitAll();
+      authz.anyRequest().authenticated();
+    });
+
+    //oaurh2 소셜로그인 적용
+    http.oauth2Login(login -> {
+      login.authorizationEndpoint(endpoint ->
+          endpoint.baseUri("/oauth2/authorize"));
+      login.userInfoEndpoint(endpoint ->
+          endpoint.userService(userOAuth2Service));
+      login.redirectionEndpoint(endpoint ->
+          endpoint.baseUri("/oauth2/callback/*"));
+      login.successHandler(oAuth2AuthenticationSuccessHandler);
+      login.failureHandler(oAuth2AuthenticationFailureHandler);
+    });
+
+    //jwt filter를 통해 토큰 관리 및 사용자 정보 가져오는 필터 적용
+    http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+    //security exception시 handling
+    http.exceptionHandling(exception -> {
+      exception.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+      exception.accessDeniedHandler(jwtAccessDeniedHandler);
+    });
+
+    return http.build();
   }
 
   @Bean
-  public WebSecurityCustomizer configure() {
-
-    //url 제외 패턴
-    return web -> web.ignoring().mvcMatchers(
-      "/api/v1/ignore"
-    );
-  }
-
-  @Bean
-  public BCryptPasswordEncoder encodePwd() {
+  public BCryptPasswordEncoder bCryptPasswordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-      http
-      .cors()
-        .and()
-      .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-      .csrf()
-        .disable()
-      .formLogin()
-        .disable()
-      .httpBasic()
-        .disable()
-      .exceptionHandling()
-        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-        .accessDeniedHandler(jwtAccessDeniedHandler)
-        .and()
-      .authorizeRequests()
-        .antMatchers("/member/join", "/member/login", "/oauth2/**")
-          .permitAll()
-        .antMatchers("/member/user")
-          .authenticated()
-        .antMatchers("/**")
-          .permitAll()
-        .and()
-      .oauth2Login()
-        .authorizationEndpoint()
-          .baseUri("/oauth2/authorize")
-//          .authorizationRequestRepository(authorizationRequestRepository)
-          .and()
-          .userInfoEndpoint()
-          .userService(userOAuth2Service)
-          .and()
-        .redirectionEndpoint()
-          .baseUri("/oauth2/callback/*")
-          .and()
-        .successHandler(oAuth2AuthenticationSuccessHandler)
-        .failureHandler(oAuth2AuthenticationFailureHandler);
-
-      http.addFilter(corsFilter)
-      .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-
-
-      return http.build();
-
-  }
-
-
 }
+
+
+
+

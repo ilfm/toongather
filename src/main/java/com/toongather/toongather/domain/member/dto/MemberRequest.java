@@ -4,10 +4,10 @@ import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.MemberType;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberDTO {
+public class MemberRequest {
 
   private Long id;
   private String email;
@@ -30,7 +30,7 @@ public class MemberDTO {
   private MemberType memberType;
 
 
-  public MemberDTO(Member member) {
+  public MemberRequest(Member member) {
     this.id = member.getId();
     this.email = member.getEmail();
     this.name = member.getName();
@@ -38,7 +38,10 @@ public class MemberDTO {
     this.phone = member.getPhone();
     this.refreshToken = member.getRefreshToken();
     this.roleNames = member.getMemberRoles()
-        .stream().map(target -> target.getRole().getName().name())
+        .stream()
+        .map(target -> target.getRole()
+            .getName()
+            .name())
         .collect(Collectors.toList());
     this.memberType = member.getMemberType();
   }
@@ -46,6 +49,7 @@ public class MemberDTO {
   @Getter
   @Setter
   public static class LoginRequest {
+
     @NotBlank
     @Email
     private String email;
@@ -56,6 +60,7 @@ public class MemberDTO {
   @Getter
   @Setter
   public static class TempCodeRequest {
+
     @NotBlank
     Long id;
 
@@ -66,6 +71,7 @@ public class MemberDTO {
   @Getter
   @Setter
   public static class SearchMemberRequest {
+
     @NotBlank
     private String name;
     @NotBlank

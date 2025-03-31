@@ -3,7 +3,7 @@ package com.toongather.toongather.global.common.advice;
 import com.toongather.toongather.domain.member.api.MemberApi;
 import com.toongather.toongather.global.common.ApiResponse;
 import com.toongather.toongather.global.common.error.CommonErrorInfo;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;

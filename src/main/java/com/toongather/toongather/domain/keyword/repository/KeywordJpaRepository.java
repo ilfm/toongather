@@ -4,8 +4,8 @@ package com.toongather.toongather.domain.keyword.repository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.toongather.toongather.domain.keyword.domain.Keyword;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 @Repository
