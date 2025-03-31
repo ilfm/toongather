@@ -4,7 +4,7 @@ import com.toongather.toongather.domain.keyword.domain.Keyword;
 import com.toongather.toongather.domain.keyword.dto.KeywordDto;
 import com.toongather.toongather.domain.keyword.repository.KeywordRepository;
 import java.util.Optional;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

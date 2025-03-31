@@ -14,7 +14,7 @@ import com.toongather.toongather.domain.member.domain.MemberType;
 import com.toongather.toongather.domain.member.domain.Role;
 import com.toongather.toongather.domain.member.domain.RoleType;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO;
+import com.toongather.toongather.domain.member.dto.MemberRequest;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.domain.member.repository.MemberRoleRepository;
 import com.toongather.toongather.domain.member.repository.RoleRepository;
@@ -57,7 +57,7 @@ public class MemberServiceTest {
 
   private Member memberEntity;
 
-  private MemberDTO memberDTO;
+  private MemberRequest memberDTO;
 
   @BeforeEach
   void setUp() {
@@ -134,7 +134,7 @@ public class MemberServiceTest {
     given(memberRepository.findByEmail(email)).willReturn(Optional.ofNullable(memberEntity));
     given(passwordEncoder.matches(password, memberEntity.getPassword())).willReturn(true);
 
-    MemberDTO result = memberService.loginMember(email, password);
+    MemberRequest result = memberService.loginMember(email, password);
 
     assertThat(result).isNotNull();
     assertThat(result.getName()).isEqualTo(memberEntity.getName());
@@ -191,7 +191,7 @@ public class MemberServiceTest {
         Optional.ofNullable(memberEntity));
 
     // when
-    MemberDTO result = memberService.findMemberWithRoleById(id);
+    MemberRequest result = memberService.findMemberWithRoleById(id);
 
     // then
     assertThat(result).isNotNull();

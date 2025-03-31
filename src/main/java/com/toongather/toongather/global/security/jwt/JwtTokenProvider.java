@@ -1,18 +1,16 @@
 package com.toongather.toongather.global.security.jwt;
 
-import com.toongather.toongather.domain.member.domain.MemberRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,9 +28,9 @@ public class JwtTokenProvider {
     private String secretKey = "webtoonsecret";
 
     //토큰시간 (default 30분)
-    private Long tokenValidTime = 30 * 60 * 1000L;
+    private final Long tokenValidTime = 30 * 60 * 1000L;
     //리프레시 토큰(default 2주)
-    private Long refreshValidTime =  14 * 24 * 60 * 60 * 1000L;
+    private final Long refreshValidTime = 14 * 24 * 60 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
 
