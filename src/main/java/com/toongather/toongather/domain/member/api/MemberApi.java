@@ -14,6 +14,7 @@ import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.ApiResponse;
 import com.toongather.toongather.global.common.error.CommonError;
 import com.toongather.toongather.global.common.error.CommonRuntimeException;
+import com.toongather.toongather.global.security.jwt.JwtToken;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
@@ -66,7 +67,7 @@ public class MemberApi {
     //refresh token 생성 및 저장
     String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
     authService.updateTokenAndLoginHistoryById(member.getId(), refreshToken);
-    httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + refreshToken);
+    httpHeaders.add(JwtToken.getRefreshTokenName(),"Bearer " + refreshToken);
 
     ApiResponse<Object> result = ApiResponse.builder()
         .path("/member/login")
@@ -110,5 +111,8 @@ public class MemberApi {
     String password = memberService.resetPasswordByEmail(email);
     emailService.sendEmail("resetpwd", password, email);
   }
+
+
+
 
 }

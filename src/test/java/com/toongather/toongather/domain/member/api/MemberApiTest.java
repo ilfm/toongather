@@ -22,6 +22,7 @@ import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.error.CommonError;
 import com.toongather.toongather.global.common.error.CommonRuntimeException;
+import com.toongather.toongather.global.security.jwt.JwtToken;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,8 +84,8 @@ class MemberApiTest {
 
 
     httpHeaders = new HttpHeaders();
-    httpHeaders.add("Authorization", "Bearer " + "token");
-    httpHeaders.add("X-RT_TOKEN", "Bearer " + "refreshToken");
+    httpHeaders.add(, "Bearer " + "token");
+    httpHeaders.add(JwtToken.getRefreshTokenName(), "Bearer " + "refreshToken");
 
   }
 
@@ -128,7 +129,7 @@ class MemberApiTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(new ObjectMapper().writeValueAsString(request)).with(csrf()))
         .andExpect(status().isOk())
-        .andExpect(header().exists("Authorization"))
+        .andExpect(header().exists(HttpHeaders.AUTHORIZATION))
         .andDo(result -> System.out.println(result.getResponse().getContentAsString()));
 
   }

@@ -42,7 +42,7 @@ public class AuthService {
     //accessToken 생성
     String token = jwtTokenProvider.createToken(member.getId(), member.getRoleNames());
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add("Authorization", "Bearer " + token);
+    httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 
     return httpHeaders;
   }

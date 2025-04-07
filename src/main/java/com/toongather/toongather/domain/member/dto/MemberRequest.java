@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,16 @@ public class MemberRequest {
   private String tempCode;
   private MemberType memberType;
 
+  @Builder
+  public MemberRequest(Long id, String email, String name, String nickname, List<String> roleNames,
+      MemberType memberType) {
+    this.id = id;
+    this.email = email;
+    this.name = name;
+    this.nickname = nickname;
+    this.roleNames = roleNames;
+    this.memberType = memberType;
+  }
 
   public MemberRequest(Member member) {
     this.id = member.getId();

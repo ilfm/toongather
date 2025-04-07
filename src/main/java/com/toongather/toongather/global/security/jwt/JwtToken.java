@@ -18,4 +18,8 @@ public class JwtToken {
     this.refreshToken = refreshToken;
     this.accessToken = accessToken;
   }
+
+  public static String getRefreshTokenName() {
+    return "X-RT_TOKEN";
+  }
 }

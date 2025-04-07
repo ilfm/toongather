@@ -4,6 +4,7 @@ import com.toongather.toongather.global.security.jwt.JwtAccessDeniedHandler;
 import com.toongather.toongather.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.toongather.toongather.global.security.jwt.JwtAuthenticationFilter;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
+import com.toongather.toongather.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.toongather.toongather.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.toongather.toongather.global.security.oauth2.UserOAuth2Service;
@@ -35,7 +36,9 @@ public class SecurityConfig {
 
   private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-  private final String[] PERMIT_ALL = {"/member/join", "/member/login", "/oauth2/**"};
+  private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+
+  private final String[] PERMIT_ALL = {"/member/join", "/member/login", "/auth/oauth2/redirect"};
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -65,14 +68,16 @@ public class SecurityConfig {
 
     //oaurh2 소셜로그인 적용
     http.oauth2Login(login -> {
-      login.authorizationEndpoint(endpoint ->
-          endpoint.baseUri("/oauth2/authorize"));
-      login.userInfoEndpoint(endpoint ->
-          endpoint.userService(userOAuth2Service));
       login.redirectionEndpoint(endpoint ->
           endpoint.baseUri("/oauth2/callback/*"));
+      login.authorizationEndpoint(endpoint ->
+          endpoint.baseUri("/oauth2/authorize")
+                  .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository)
+      );
       login.successHandler(oAuth2AuthenticationSuccessHandler);
       login.failureHandler(oAuth2AuthenticationFailureHandler);
+      login.userInfoEndpoint(endpoint ->
+          endpoint.userService(userOAuth2Service));
     });
 
     //jwt filter를 통해 토큰 관리 및 사용자 정보 가져오는 필터 적용
