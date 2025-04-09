@@ -15,17 +15,17 @@ public class WebtoonSearchRequest {
     private Age age;
     private WebtoonStatus status;
     private Platform platform;
-    private List<Long> genreKeywords;
+    private List<Long> genreKeywordIds;
     private WebtoonSortType sortType;
 
     @Builder
-    public WebtoonSearchRequest(String title, String author, Age age, WebtoonStatus status, Platform platform, List<Long> genreKeywords, WebtoonSortType sortType) {
+    public WebtoonSearchRequest(String title, String author, Age age, WebtoonStatus status, Platform platform, List<Long> genreKeywordIds, WebtoonSortType sortType) {
         this.title = title;
         this.author = author;
         this.age = age;
         this.status = status;
         this.platform = platform;
-        this.genreKeywords = genreKeywords;
+        this.genreKeywordIds = genreKeywordIds;
         this.sortType = sortType;
     }
 }

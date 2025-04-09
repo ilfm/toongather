@@ -8,7 +8,7 @@ import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchRequest;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonSortType;
-import com.toongather.toongather.domain.webtoon.dto.response.QWebtoonSearchResponse;
+import com.toongather.toongather.domain.webtoon.dto.QWebtoonSearchResponse;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -33,6 +33,7 @@ public class WebtoonRepositoryImpl implements WebtoonRepositoryCustom {
                         webtoon.title,
                         webtoon.imgPath
                 ))
+                .distinct()
                 .from(webtoon)
                 .join(webtoon.webtoonGenreKeywords, webtoonGenreKeyword)
                 .where(buildConditions(request))
@@ -43,6 +44,7 @@ public class WebtoonRepositoryImpl implements WebtoonRepositoryCustom {
 
         Long total = queryFactory
                 .select(webtoon.count())
+                .distinct()
                 .from(webtoon)
                 .leftJoin(webtoon.webtoonGenreKeywords, webtoonGenreKeyword)
                 .where(buildConditions(request))
@@ -66,7 +68,7 @@ public class WebtoonRepositoryImpl implements WebtoonRepositoryCustom {
         builder.and(equalsIfNotNull(webtoon.age, request.getAge()));
         builder.and(equalsIfNotNull(webtoon.status, request.getStatus()));
         builder.and(equalsIfNotNull(webtoon.platform, request.getPlatform()));
-        builder.and(genreKeywordIdsIn(request.getGenreKeywords()));
+        builder.and(genreKeywordIdsIn(request.getGenreKeywordIds()));
 
         return builder;
     }
