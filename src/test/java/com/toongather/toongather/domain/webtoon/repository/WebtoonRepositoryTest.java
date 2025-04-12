@@ -27,6 +27,7 @@ import static com.toongather.toongather.domain.webtoon.domain.Platform.NAVER;
 import static com.toongather.toongather.domain.webtoon.domain.WebtoonStatus.END;
 import static com.toongather.toongather.domain.webtoon.domain.WebtoonStatus.ING;
 import static com.toongather.toongather.domain.webtoon.dto.WebtoonSortType.TITLE_ASC;
+import static com.toongather.toongather.domain.webtoon.dto.WebtoonSortType.TITLE_DESC;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -60,6 +61,7 @@ class WebtoonRepositoryTest {
                         WebtoonSearchRequest.builder().status(END).sortType(TITLE_ASC).build(),
                         1, List.of("치즈인더트랩"))
         );
+
         return argumentsStream;
     }
 
@@ -129,6 +131,89 @@ class WebtoonRepositoryTest {
 
         // then
         assertEquals(1, result.getTotalElements());
+        assertEquals("치즈인더트랩", result.getContent().get(0).getTitle());
+    }
+
+    static Stream<Arguments> sortConditionProvider() {
+        return Stream.of(
+                Arguments.of("제목 오름차순",
+                        WebtoonSearchRequest.builder().sortType(TITLE_ASC).build(),
+                        List.of("세기말 풋사과 보습학원", "치즈인더트랩")),
+                Arguments.of("제목 내림차순",
+                        WebtoonSearchRequest.builder().sortType(TITLE_DESC).build(),
+                        List.of("치즈인더트랩", "세기말 풋사과 보습학원"))
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("sortConditionProvider")
+    void searchAllBySortConditions(String testName,
+                                   WebtoonSearchRequest request,
+                                   List<String> expectedTitles) {
+        // given
+        GenreKeyword genreKeyword1 = createGenreKeyword("일상", "Y");
+        GenreKeyword genreKeyword2 = createGenreKeyword("드라마", "Y");
+        genreKeywordRepository.saveAll(List.of(genreKeyword1, genreKeyword2));
+
+        Webtoon webtoon1 = createWebtoon("치즈인더트랩", "순끼", OVER15, END, NAVER,
+                List.of(genreKeyword1, genreKeyword2));
+
+        Webtoon webtoon2 = createWebtoon("세기말 풋사과 보습학원", "순끼", ALL, ING, NAVER,
+                List.of(genreKeyword1));
+        webtoonRepository.saveAll(List.of(webtoon1, webtoon2));
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // when
+        Page<WebtoonSearchResponse> result = webtoonRepository.searchAll(request, pageable);
+
+        // then
+        assertEquals(expectedTitles.size(), result.getTotalElements());
+        if (!expectedTitles.isEmpty()) {
+            List<String> actualTitles = result.getContent().stream()
+                    .map(WebtoonSearchResponse::getTitle)
+                    .collect(Collectors.toList());
+
+            assertEquals(expectedTitles, actualTitles);
+        }
+    }
+
+    @DisplayName("웹툰을 페이지 단위로 조회한다.")
+    @Test
+    void searchAllWithPaging() {
+        // given
+        GenreKeyword genreKeyword1 = createGenreKeyword("일상", "Y");
+        GenreKeyword genreKeyword2 = createGenreKeyword("드라마", "Y");
+        genreKeywordRepository.saveAll(List.of(genreKeyword1, genreKeyword2));
+
+        Webtoon webtoon1 = createWebtoon("치즈인더트랩", "순끼", OVER15, END, NAVER,
+                List.of(genreKeyword1, genreKeyword2));
+
+        Webtoon webtoon2 = createWebtoon("세기말 풋사과 보습학원", "순끼", ALL, ING, NAVER,
+                List.of(genreKeyword1));
+        webtoonRepository.saveAll(List.of(webtoon1, webtoon2));
+
+        WebtoonSearchRequest request = WebtoonSearchRequest
+                .builder()
+                .sortType(TITLE_ASC)
+                .build();
+
+        Pageable pageable = PageRequest.of(0, 1);
+
+        // when
+        Page<WebtoonSearchResponse> result = webtoonRepository.searchAll(request, pageable);
+
+        // then
+        assertEquals(2, result.getTotalElements()); // 전체 웹툰 수
+        assertEquals(1, result.getContent().size()); // 현재 페이지의 웹툰 수
+        assertEquals(2, result.getTotalPages()); // 전체 페이지 수
+        assertEquals("세기말 풋사과 보습학원", result.getContent().get(0).getTitle());
+
+        // 두 번째 페이지 조회
+        pageable = PageRequest.of(1, 1);
+        result = webtoonRepository.searchAll(request, pageable);
+
+        assertEquals(1, result.getContent().size());
         assertEquals("치즈인더트랩", result.getContent().get(0).getTitle());
     }
 

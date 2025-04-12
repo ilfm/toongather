@@ -43,8 +43,7 @@ public class WebtoonRepositoryImpl implements WebtoonRepositoryCustom {
                 .fetch();
 
         Long total = queryFactory
-                .select(webtoon.count())
-                .distinct()
+                .select(webtoon.toonId.countDistinct())
                 .from(webtoon)
                 .leftJoin(webtoon.webtoonGenreKeywords, webtoonGenreKeyword)
                 .where(buildConditions(request))
