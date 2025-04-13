@@ -33,10 +33,10 @@ public class WebtoonRepositoryImpl implements WebtoonRepositoryCustom {
                         webtoon.title,
                         webtoon.imgPath
                 ))
-                .distinct()
                 .from(webtoon)
-                .join(webtoon.webtoonGenreKeywords, webtoonGenreKeyword)
+                .leftJoin(webtoon.webtoonGenreKeywords, webtoonGenreKeyword)
                 .where(buildConditions(request))
+                .groupBy(webtoon.toonId)
                 .orderBy(createOrderSpecifier(request.getSortType()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
