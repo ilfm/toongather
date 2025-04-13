@@ -1,6 +1,5 @@
 package com.toongather.toongather.domain.webtoon.repository;
 
-import com.toongather.toongather.TestConfig;
 import com.toongather.toongather.domain.webtoon.domain.*;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchRequest;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchResponse;
@@ -10,9 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,10 +26,7 @@ import static com.toongather.toongather.domain.webtoon.dto.WebtoonSortType.TITLE
 import static com.toongather.toongather.domain.webtoon.dto.WebtoonSortType.TITLE_DESC;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(TestConfig.class)
-class WebtoonRepositoryTest {
+class WebtoonRepositoryTest extends RepositoryTestSupport {
 
     @Autowired
     private WebtoonRepository webtoonRepository;
