@@ -1,13 +1,12 @@
 package com.toongather.toongather.domain.member.service;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 @Service
 @Transactional(readOnly = true)
@@ -15,7 +14,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 public class EmailService {
 
   private final JavaMailSender javaMailSender;
-  private final SpringTemplateEngine templateEngine;
+  private final org.thymeleaf.spring6.SpringTemplateEngine templateEngine;
 
   public void sendEmail(String type, String code, String email) {
 

@@ -3,20 +3,22 @@ package com.toongather.toongather.domain.member.api;
 import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.domain.MemberType;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO;
-import com.toongather.toongather.domain.member.dto.MemberDTO.LoginRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO.SearchMemberRequest;
-import com.toongather.toongather.domain.member.dto.MemberDTO.TempCodeRequest;
+import com.toongather.toongather.domain.member.dto.MemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberRequest.LoginRequest;
+import com.toongather.toongather.domain.member.dto.MemberRequest.SearchMemberRequest;
+import com.toongather.toongather.domain.member.dto.MemberRequest.TempCodeRequest;
+import com.toongather.toongather.domain.member.dto.MemberResponse;
 import com.toongather.toongather.domain.member.service.AuthService;
 import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.global.common.ApiResponse;
 import com.toongather.toongather.global.common.error.CommonError;
 import com.toongather.toongather.global.common.error.CommonRuntimeException;
+import com.toongather.toongather.global.security.jwt.JwtToken;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -54,26 +56,24 @@ public class MemberApi {
   @PostMapping("/login")
   public ResponseEntity<ApiResponse<Object>> login(@Valid @RequestBody LoginRequest request) {
 
-    MemberDTO member = memberService.loginMember(request.getEmail(), request.getPassword());
+    MemberRequest member = memberService.loginMember(request.getEmail(), request.getPassword());
 
     if (member.getMemberType() == MemberType.TEMP) {
       throw new CommonRuntimeException(CommonError.USER_NOT_ACTIVE);
     }
-
 
     //로그인 성공 시, access token 생성
     HttpHeaders httpHeaders = authService.setAccessTokenHeader(member);
     //refresh token 생성 및 저장
     String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
     authService.updateTokenAndLoginHistoryById(member.getId(), refreshToken);
-    httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + refreshToken);
+    httpHeaders.add(JwtToken.getRefreshTokenName(),"Bearer " + refreshToken);
 
     ApiResponse<Object> result = ApiResponse.builder()
         .path("/member/login")
         .data(Map.of("id", member.getId()))
         .message("login success")
         .build();
-
     return new ResponseEntity<>(result, httpHeaders, HttpStatus.OK);
 
   }
@@ -89,7 +89,7 @@ public class MemberApi {
   }
 
   @GetMapping("/{id}/resend-email")
-  public void reSendEmail(@PathVariable Long id) {
+  public void reSendEmail(@PathVariable(name = "id") Long id) {
     memberService.resendEmail(id);
   }
 
@@ -99,12 +99,20 @@ public class MemberApi {
     return memberService.findMemberByNameAndPhone(member.getName(), member.getPhone());
   }
 
+  @GetMapping("/{id}")
+  public MemberResponse getMember(@PathVariable(name = "id") Long id) {
+    return memberService.findMemberById(id);
+  }
+
 
   // 이메일로 비밀번호 초기화하기
   @GetMapping("/{email}/reset-password")
-  public void resetPassword(@PathVariable String email) {
+  public void resetPassword(@PathVariable(name = "email") String email) {
     String password = memberService.resetPasswordByEmail(email);
     emailService.sendEmail("resetpwd", password, email);
   }
+
+
+
 
 }

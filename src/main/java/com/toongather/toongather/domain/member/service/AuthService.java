@@ -1,13 +1,12 @@
 package com.toongather.toongather.domain.member.service;
 
 import com.toongather.toongather.domain.member.domain.Member;
-import com.toongather.toongather.domain.member.dto.MemberDTO;
+import com.toongather.toongather.domain.member.dto.MemberRequest;
 import com.toongather.toongather.domain.member.repository.MemberRepository;
 import com.toongather.toongather.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,12 +37,12 @@ public class AuthService {
    * @param member
    * @return
    */
-  public HttpHeaders setAccessTokenHeader(MemberDTO member) {
+  public HttpHeaders setAccessTokenHeader(MemberRequest member) {
 
     //accessToken 생성
     String token = jwtTokenProvider.createToken(member.getId(), member.getRoleNames());
     HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.add("Authorization", "Bearer " + token);
+    httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 
     return httpHeaders;
   }
