@@ -5,6 +5,8 @@ import com.toongather.toongather.domain.webtoon.dto.WebtoonCreateResponse;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonRequest;
 import com.toongather.toongather.domain.webtoon.repository.GenreKeywordRepository;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
+import com.toongather.toongather.global.common.error.custom.WebtoonException;
+import com.toongather.toongather.global.common.error.custom.WebtoonException.WebtoonNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +24,6 @@ import static com.toongather.toongather.domain.webtoon.domain.Platform.*;
 import static com.toongather.toongather.domain.webtoon.domain.WebtoonStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -149,7 +150,7 @@ class WebtoonServiceTest {
 
         // when & then
         assertThatThrownBy(() -> webtoonService.updateWebtoon(nonExistentToonId, request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WebtoonNotFoundException.class)
                 .hasMessage("해당 웹툰이 존재하지 않습니다.");
 
         verify(genreKeywordRepository, never()).findAllByGenreKeywordIdIn(any());
@@ -186,7 +187,7 @@ class WebtoonServiceTest {
 
         // when & then
         assertThatThrownBy(() -> webtoonService.deleteWebtoon(nonExistentToonId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(WebtoonNotFoundException.class)
                 .hasMessage("해당 웹툰이 존재하지 않습니다.");
 
         verify(webtoonRepository).findById(nonExistentToonId);
