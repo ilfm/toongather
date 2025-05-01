@@ -13,12 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
-
 import static com.toongather.toongather.domain.webtoon.domain.Age.OVER15;
 import static com.toongather.toongather.domain.webtoon.domain.Platform.DAUM;
 import static com.toongather.toongather.domain.webtoon.domain.WebtoonStatus.END;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -44,6 +41,20 @@ class WebtoonControllerTest {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new WebtoonController(webtoonService))
                 .build();
+    }
+
+    @DisplayName("웹툰 상세 조회에 성공한다")
+    @Test
+    void readWebtoon() throws Exception {
+        // given
+        Long toonId = 1L;
+
+        // when & then
+        mockMvc.perform(get("/webtoon/{toonId}", toonId))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(webtoonService, times(1)).readWebtoon(toonId);
     }
 
     @DisplayName("웹툰 등록에 성공한다.")
