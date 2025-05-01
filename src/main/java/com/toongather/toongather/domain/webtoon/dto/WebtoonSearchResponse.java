@@ -21,7 +21,7 @@ public class WebtoonSearchResponse {
         this.imgPath = imgPath;
     }
 
-    public static WebtoonSearchResponse of(Webtoon webtoon) {
+    public static WebtoonSearchResponse from(Webtoon webtoon) {
         return WebtoonSearchResponse.builder()
                 .toonId(webtoon.getToonId())
                 .title(webtoon.getTitle())

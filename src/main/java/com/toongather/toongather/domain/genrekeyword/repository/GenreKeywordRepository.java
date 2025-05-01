@@ -1,6 +1,6 @@
-package com.toongather.toongather.domain.webtoon.repository;
+package com.toongather.toongather.domain.genrekeyword.repository;
 
-import com.toongather.toongather.domain.webtoon.domain.GenreKeyword;
+import com.toongather.toongather.domain.genrekeyword.domain.GenreKeyword;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

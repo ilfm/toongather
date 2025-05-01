@@ -1,4 +1,4 @@
-package com.toongather.toongather.domain.webtoon.domain;
+package com.toongather.toongather.domain.genrekeyword.domain;
 
 import com.toongather.toongather.global.common.BaseEntity;
 import lombok.AccessLevel;
