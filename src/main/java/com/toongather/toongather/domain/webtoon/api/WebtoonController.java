@@ -1,9 +1,6 @@
 package com.toongather.toongather.domain.webtoon.api;
 
-import com.toongather.toongather.domain.webtoon.dto.WebtoonRequest;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchRequest;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonCreateResponse;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchResponse;
+import com.toongather.toongather.domain.webtoon.dto.*;
 import com.toongather.toongather.domain.webtoon.service.WebtoonService;
 import com.toongather.toongather.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +17,13 @@ public class WebtoonController {
     private final WebtoonService webtoonService;
 
     @GetMapping("/search")
-    public ApiResponse<Page<WebtoonSearchResponse>> searchAll(WebtoonSearchRequest request, Pageable pageable) {
-        return ApiResponse.ok("/webtoon/search", webtoonService.searchAll(request, pageable));
+    public ApiResponse<Page<WebtoonSearchResponse>> searchAllWebtoons(WebtoonSearchRequest request, Pageable pageable) {
+        return ApiResponse.ok("/webtoon/search", webtoonService.searchAllWebtoons(request, pageable));
+    }
+
+    @GetMapping("/{toonId}")
+    public ApiResponse<WebtoonResponse> readWebtoon(@PathVariable Long toonId) {
+        return ApiResponse.ok("/webtoon/" + toonId, webtoonService.readWebtoon(toonId));
     }
 
     // todo: @Valid 추가

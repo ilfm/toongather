@@ -1,13 +1,10 @@
 package com.toongather.toongather.domain.webtoon.service;
 
 
-import com.toongather.toongather.domain.webtoon.domain.GenreKeyword;
+import com.toongather.toongather.domain.genrekeyword.domain.GenreKeyword;
 import com.toongather.toongather.domain.webtoon.domain.Webtoon;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonRequest;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchRequest;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonCreateResponse;
-import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchResponse;
-import com.toongather.toongather.domain.webtoon.repository.GenreKeywordRepository;
+import com.toongather.toongather.domain.webtoon.dto.*;
+import com.toongather.toongather.domain.genrekeyword.repository.GenreKeywordRepository;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
 import com.toongather.toongather.global.common.error.custom.WebtoonException;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +23,15 @@ public class WebtoonService {
     private final GenreKeywordRepository genreKeywordRepository;
     private final WebtoonRepository webtoonRepository;
 
-    public Page<WebtoonSearchResponse> searchAll(WebtoonSearchRequest request, Pageable pageable) {
+    public Page<WebtoonSearchResponse> searchAllWebtoons(WebtoonSearchRequest request, Pageable pageable) {
         return webtoonRepository.searchAll(request, pageable);
+    }
+
+    public WebtoonResponse readWebtoon(Long toonId) {
+        Webtoon webtoon = webtoonRepository.findById(toonId)
+                .orElseThrow(WebtoonException.WebtoonNotFoundException::new);
+
+        return WebtoonResponse.from(webtoon);
     }
 
     @Transactional
