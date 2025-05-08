@@ -16,6 +16,7 @@ import com.toongather.toongather.domain.webtoon.domain.Webtoon;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
 
 import com.toongather.toongather.domain.webtoon.service.WebtoonService;
+import com.toongather.toongather.global.common.error.custom.ReviewException.ReviewNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -215,7 +216,7 @@ public class ReviewServiceTest {
   public void deleteReview() {
     //Given
     Long reviewId = 1L;
-    given(reviewRepository.existsById(reviewId)).willReturn(true);
+    given(reviewRepository.findById(reviewId)).willReturn(Optional.of(any(Review.class)));
 
     //When
     reviewService.deleteReview(reviewId);
@@ -224,17 +225,17 @@ public class ReviewServiceTest {
     verify(reviewRepository, times(1)).deleteById(reviewId);
   }
 
-  @DisplayName("리뷰가 없는 경우, 리뷰 삭제 시 NoSuchElementException 예외발생")
+  @DisplayName("리뷰가 없는 경우, 리뷰 삭제 시 ReviewNotFoundException 예외발생")
   @Test
   public void deleteReviewNonExistReview() {
     //Given
     Long nonExistentReviewId = 1L;
-    given(reviewRepository.existsById(nonExistentReviewId)).willReturn(false);
+    given(reviewRepository.findById(nonExistentReviewId)).willReturn(Optional.empty());
 
     //When&then
     assertThatThrownBy(() -> reviewService.deleteReview(nonExistentReviewId))
-        .isInstanceOf(NoSuchElementException.class)
-        .hasMessageContaining("삭제 할 리뷰가 없습니다.");
+        .isInstanceOf(ReviewNotFoundException.class)
+        .hasMessageContaining("해당 리뷰가 존재하지 않습니다.");
   }
 
 }

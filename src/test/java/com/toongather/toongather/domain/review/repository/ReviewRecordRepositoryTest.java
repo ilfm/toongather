@@ -67,9 +67,9 @@ class ReviewRecordRepositoryTest {
     joinForm.setEmail("younie.jang@gmail.com");
     joinForm.setNickName("test");
     joinForm.setPassword("1234");
-    Long memberId = memberService.join(joinForm);
+    Member member = memberService.join(joinForm);
 
-    Member member = memberService.findMemberEntityById(memberId);
+    Member findmember = memberService.findMemberEntityById(member.getId());
     List<GenreKeyword> genreKeywords = List.of(
         createGenreKeyword(1L, "로맨스판타지", "Y"),
         createGenreKeyword(2L, "드라마", "Y")
@@ -80,7 +80,7 @@ class ReviewRecordRepositoryTest {
     WebtoonCreateResponse webtoonCreateResponse = webtoonService.createWebtoon(request);
     Webtoon webtoon = webtoonRepository.findById(webtoonCreateResponse.getId()).get();
 
-    Review review = Review.createReview(member, webtoon, "테스트 추천 코멘트", 5L);
+    Review review = Review.createReview(findmember, webtoon, "테스트 추천 코멘트", 5L);
     reviewId = reviewService.saveReview(review);
     Review savedReview = reviewService.findById(reviewId);
 

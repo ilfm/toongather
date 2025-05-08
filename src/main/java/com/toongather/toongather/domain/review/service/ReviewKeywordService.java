@@ -8,15 +8,12 @@ import com.toongather.toongather.domain.review.domain.ReviewKeyword;
 import com.toongather.toongather.domain.review.dto.CreateReviewKeywordRequest;
 import com.toongather.toongather.domain.review.repository.ReviewKeywordRepository;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -45,42 +42,29 @@ public class ReviewKeywordService {
 
   @Transactional
   public void createReviewKeyword(CreateReviewKeywordRequest request) {
+    List<ReviewKeyword> reviewKeywords = new ArrayList<>();
     for (String keywordNm : request.getKeywords()) {
       Keyword keyword = keywordService.createKeyword(keywordNm);
       Review review = reviewService.findById(request.getReviewId());
-      saveReviewKeyword(ReviewKeyword.createReviewKeyword(review, keyword));
+      reviewKeywords.add(ReviewKeyword.createReviewKeyword(review, keyword));
     }
+    saveAll(reviewKeywords);
   }
 
   @Transactional
   public void updateReviewKeyword(CreateReviewKeywordRequest request) {
+    List<ReviewKeyword> reviewKeywords = new ArrayList<>();
     Review review = reviewService.findById(request.getReviewId());
-    // 기존 등록된 리뷰 키워드
+
     List<ReviewKeyword> existingReviewKeywords = reviewKeywordRepository.findByReviewReviewId(
         request.getReviewId());
+    reviewKeywordRepository.deleteAll(existingReviewKeywords);
 
-    // 기존 등록된 키워드명 Set
-    Set<String> existingReviewKeywordNm = existingReviewKeywords.stream()
-        .map((rk) -> rk.getKeyword().getKeywordNm()).collect(Collectors.toSet());
-
-    // 수정할 키워드명 Set
-    Set<String> newKeywordNames = new HashSet<>(request.getKeywords());
-
-    // 삭제할 키워드(기존키워드에 있지만, 수정할 키워드에 없는 키워드)
-    List<ReviewKeyword> keywordsToDelete = existingReviewKeywords.stream()
-        .filter(rk -> !newKeywordNames.contains(rk.getKeyword().getKeywordNm()))
-        .collect(Collectors.toList());
-
-    // 추가할 키워드(수정할 키워드에 있지만, 기존키워드에서는 없던 키워드)
-    List<ReviewKeyword> newReviewKeywords = new ArrayList<>();
-    for (String keywordNm : newKeywordNames) {
-      if (!existingReviewKeywordNm.contains(keywordNm)) {
-        Keyword keyword = keywordService.createKeyword(keywordNm);
-        newReviewKeywords.add(ReviewKeyword.createReviewKeyword(review, keyword));
-      }
+    for (String newKeyword : request.getKeywords()) {
+      Keyword keyword = keywordService.createKeyword(newKeyword);
+      reviewKeywords.add(ReviewKeyword.createReviewKeyword(review, keyword));
     }
-    reviewKeywordRepository.deleteAll(keywordsToDelete);
-    saveAll(newReviewKeywords);
+    saveAll(reviewKeywords);
   }
 
   @Transactional

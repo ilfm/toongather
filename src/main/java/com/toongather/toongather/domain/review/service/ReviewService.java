@@ -29,14 +29,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class ReviewService {
 
   @Autowired
@@ -50,9 +49,6 @@ public class ReviewService {
 
   @Autowired
   private MemberService memberService;
-
-  @Autowired
-  private ReviewKeywordService reviewKeywordService;
 
   //@Autowired
   //private FileService fileService;
@@ -145,10 +141,8 @@ public class ReviewService {
 
   @Transactional
   public void deleteReview(Long reviewId) {
-    if (!reviewRepository.existsById(reviewId)) {
-      throw new ReviewNotFoundException();
-    }
-    //reviewKeywordService.deleteByReviewId(reviewId);
+    reviewRepository.findById(reviewId)
+        .orElseThrow(ReviewNotFoundException::new);
     reviewRepository.deleteById(reviewId);
   }
 }
