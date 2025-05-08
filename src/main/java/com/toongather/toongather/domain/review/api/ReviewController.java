@@ -6,12 +6,14 @@ import com.toongather.toongather.domain.review.dto.CreateReviewRequest;
 import com.toongather.toongather.domain.review.dto.SearchReviewResponse;
 import com.toongather.toongather.domain.review.dto.UpdateReviewRequest;
 import com.toongather.toongather.domain.review.service.ReviewService;
+import com.toongather.toongather.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -20,8 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ReviewController {
 
-  @Autowired
-  private ReviewService reviewService;
+  private final ReviewService reviewService;
 
   @Value("${file.dir}")
   private String fileDir;
@@ -34,12 +35,20 @@ public class ReviewController {
   }
 
   @PostMapping("/new")
-  public Long saveReview(@RequestBody CreateReviewRequest request) {
-    return reviewService.createReview(request);
+  public ResponseEntity<Long> createReview(@RequestBody CreateReviewRequest request) {
+    return ResponseEntity.ok(reviewService.createReview(request));
   }
 
-  @PostMapping("/{reviewId}")
-  public void updateReview(@RequestBody UpdateReviewRequest request, @PathVariable Long reviewId) {
+  @PutMapping("/{reviewId}")
+  public ResponseEntity<Void> updateReview(@RequestBody UpdateReviewRequest request,
+      @PathVariable Long reviewId) {
     reviewService.updateReview(request);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/{reviewId}")
+  public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
+    reviewService.deleteReview(reviewId);
+    return ResponseEntity.ok().build();
   }
 }

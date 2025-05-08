@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
+import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.service.MemberService;
 import com.toongather.toongather.domain.review.domain.Review;
@@ -49,20 +50,21 @@ class ReviewRecordServiceTest {
   @Test
   public void createReviewRecord() {
     //Given
-    given(memberService.join(any(JoinFormRequest.class))).willReturn(1L);
+    Member member = Member.builder().memberId(1L).build();
+    given(memberService.join(any(JoinFormRequest.class))).willReturn(member);
     given(webtoonService.createWebtoon(any(WebtoonRequest.class)))
         .willReturn(WebtoonCreateResponse.builder().id(1L).build());
 
     Review existReview = Review.builder().reviewId(1L).recommendComment("리뷰 코멘트").build();
     given(reviewService.findById(existReview.getReviewId())).willReturn(existReview);
 
-    Long memberId = memberService.join(new JoinFormRequest());
+    Member findMember = memberService.join(new JoinFormRequest());
     WebtoonCreateResponse webtoonCreateResponse = webtoonService.createWebtoon(
         WebtoonRequest.builder().build());
 
     ReviewRecordRequest createReviewRecordRequest = ReviewRecordRequest.builder()
         .reviewId(existReview.getReviewId())
-        .memberId(memberId)
+        .memberId(findMember.getId())
         .record("리뷰 있는 기록 저장 테스트")
         .toonId(webtoonCreateResponse.getId())
         .build();
@@ -87,18 +89,19 @@ class ReviewRecordServiceTest {
   @Test
   public void createReviewRecordNoReview() {
     //Given
-    given(memberService.join(any(JoinFormRequest.class))).willReturn(1L);
+    Member member = Member.builder().memberId(1L).build();
+    given(memberService.join(any(JoinFormRequest.class))).willReturn(member);
     given(webtoonService.createWebtoon(any(WebtoonRequest.class)))
         .willReturn(WebtoonCreateResponse.builder().id(1L).build());
     given(reviewService.createDefaultReview(any(Long.class), any(Long.class)))
         .willReturn(Review.builder().reviewId(1L).build());
 
-    Long memberId = memberService.join(new JoinFormRequest());
+    Member findMember = memberService.join(new JoinFormRequest());
     WebtoonCreateResponse webtoonCreateResponse = webtoonService.createWebtoon(
         WebtoonRequest.builder().build());
 
     ReviewRecordRequest createReviewRecordRequest = ReviewRecordRequest.builder()
-        .memberId(memberId)
+        .memberId(findMember.getId())
         .reviewId(null)
         .record("리뷰 없는 기록 저장 테스트")
         .toonId(webtoonCreateResponse.getId())

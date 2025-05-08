@@ -75,33 +75,39 @@ class ReviewKeywordServiceTest {
         .keywords(newKeywords)
         .build();
 
-    given(reviewService.findEntityById(request.getReviewId())).willReturn(mock(Review.class));
+    given(reviewService.findById(request.getReviewId())).willReturn(mock(Review.class));
     given(reviewKeywordRepository.findByReviewReviewId(request.getReviewId()))
         .willReturn(existingReviewKeyword);
 
-    given(keywordService.createKeyword("수정된"))
-        .willReturn(Keyword.builder().keywordNm("수정된").build());
+    given(keywordService.createKeyword("수정된")).willReturn(
+        Keyword.builder().keywordNm("수정된").build());
+    given(keywordService.createKeyword("키워드")).willReturn(
+        Keyword.builder().keywordNm("키워드").build());
 
-    ArgumentCaptor<List<ReviewKeyword>> savedKeywordsCaptor = ArgumentCaptor.forClass(List.class);
-    ArgumentCaptor<List<ReviewKeyword>> deletedKeywordsCaptor = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<List<ReviewKeyword>> savedKeywordsCaptor = ArgumentCaptor.forClass(
+        List.class);    // 저장된 키워드
+    ArgumentCaptor<List<ReviewKeyword>> deletedKeywordsCaptor = ArgumentCaptor.forClass(
+        List.class);  // 수정된 키워드
 
     //When
     reviewKeywordService.updateReviewKeyword(request);
 
     //Then
-    verify(reviewService).findEntityById(reviewId);
-    verify(reviewKeywordRepository).findByReviewReviewId(reviewId);
-    verify(reviewKeywordRepository).deleteAll(deletedKeywordsCaptor.capture());
-    verify(reviewKeywordRepository).saveAll(savedKeywordsCaptor.capture());
+    verify(reviewService, only()).findById(reviewId);
+    verify(reviewKeywordRepository, times(1)).findByReviewReviewId(reviewId);
+    verify(reviewKeywordRepository, times(1)).deleteAll(deletedKeywordsCaptor.capture());
+    verify(reviewKeywordRepository, times(1)).saveAll(savedKeywordsCaptor.capture());
 
     List<ReviewKeyword> deleteKeywords = deletedKeywordsCaptor.getValue();
     List<ReviewKeyword> savedKeywords = savedKeywordsCaptor.getValue();
 
     assertThat(deleteKeywords).extracting(
             reviewKeyword -> reviewKeyword.getKeyword().getKeywordNm())
-        .containsExactlyInAnyOrder("기존의");
+        .containsExactlyInAnyOrder("기존의", "키워드");
     assertThat(savedKeywords).extracting(
             reviewKeyword -> reviewKeyword.getKeyword().getKeywordNm())
-        .containsExactlyInAnyOrder("수정된");
+        .containsExactlyInAnyOrder("수정된", "키워드");
   }
+
+  
 }

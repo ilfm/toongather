@@ -14,5 +14,5 @@ public class UpdateReviewRequest {
   private Long reviewId;
   private String recommendComment;
   private Long star;
-  private List<String> keywords;
+  //private List<String> keywords;
 }

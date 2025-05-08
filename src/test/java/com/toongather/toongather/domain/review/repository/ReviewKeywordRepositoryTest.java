@@ -3,6 +3,7 @@ package com.toongather.toongather.domain.review.repository;
 import static org.assertj.core.api.Assertions.*;
 
 
+import com.toongather.toongather.domain.member.domain.Member;
 import com.toongather.toongather.domain.member.dto.JoinFormRequest;
 import com.toongather.toongather.domain.member.service.EmailService;
 import com.toongather.toongather.domain.member.service.MemberService;
@@ -19,7 +20,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -32,7 +34,7 @@ class ReviewKeywordRepositoryTest {
   WebtoonRepository webtoonRepository;
   @Autowired
   MemberService memberService;
-  @MockBean
+  @MockitoBean
   EmailService emailService;
   @Autowired
   ReviewService reviewService;
@@ -52,7 +54,6 @@ class ReviewKeywordRepositoryTest {
         .star(5L)
         .toonId(w1.getToonId())
         .recommendComment("재밌구만유")
-        .keywords(keywords)
         .build();
 
     Long reviewId = reviewService.createReview(createRequest);
@@ -74,8 +75,8 @@ class ReviewKeywordRepositoryTest {
     joinFormDTO.setNickName("테스트닉네임");
     joinFormDTO.setPassword("1234");
     joinFormDTO.setPhone("010-7666-1111");
-    Long memberId = memberService.join(joinFormDTO);
-    return memberId;
+    Member member = memberService.join(joinFormDTO);
+    return member.getId();
   }
 
   private Webtoon createWebtoon(String title, Long toonId) {
