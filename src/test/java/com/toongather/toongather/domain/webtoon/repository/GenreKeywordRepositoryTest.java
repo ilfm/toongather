@@ -1,6 +1,7 @@
 package com.toongather.toongather.domain.webtoon.repository;
 
-import com.toongather.toongather.domain.webtoon.domain.GenreKeyword;
+import com.toongather.toongather.domain.genrekeyword.domain.GenreKeyword;
+import com.toongather.toongather.domain.genrekeyword.repository.GenreKeywordRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.*;
 
 class GenreKeywordRepositoryTest extends RepositoryTestSupport {
 

@@ -1,5 +1,6 @@
 package com.toongather.toongather.domain.webtoon.domain;
 
+import com.toongather.toongather.domain.genrekeyword.domain.GenreKeyword;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,6 @@ import static com.toongather.toongather.domain.webtoon.domain.Platform.NAVER;
 import static com.toongather.toongather.domain.webtoon.domain.WebtoonStatus.END;
 import static com.toongather.toongather.domain.webtoon.domain.WebtoonStatus.ING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class WebtoonTest {
 

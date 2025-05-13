@@ -1,11 +1,12 @@
 package com.toongather.toongather.domain.webtoon.service;
 
+import com.toongather.toongather.domain.genrekeyword.domain.GenreKeyword;
 import com.toongather.toongather.domain.webtoon.domain.*;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonCreateResponse;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonRequest;
-import com.toongather.toongather.domain.webtoon.repository.GenreKeywordRepository;
+import com.toongather.toongather.domain.genrekeyword.repository.GenreKeywordRepository;
+import com.toongather.toongather.domain.webtoon.dto.WebtoonResponse;
 import com.toongather.toongather.domain.webtoon.repository.WebtoonRepository;
-import com.toongather.toongather.global.common.error.custom.WebtoonException;
 import com.toongather.toongather.global.common.error.custom.WebtoonException.WebtoonNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +41,43 @@ class WebtoonServiceTest {
 
     @Mock
     private GenreKeywordRepository genreKeywordRepository;
+
+    @DisplayName("웹툰 상세 조회에 성공한다.")
+    @Test
+    void readWebtoonSuccess() {
+        // given
+        Long toonId = 1L;
+        Webtoon webtoon = Webtoon.builder()
+                .toonId(toonId)
+                .title("테스트 웹툰")
+                .genreKeywords(List.of(
+                        createGenreKeyword(1L, "로맨스판타지", "Y")
+                ))
+                .build();
+
+        given(webtoonRepository.findById(toonId)).willReturn(Optional.of(webtoon));
+
+        // when
+        WebtoonResponse response = webtoonService.readWebtoon(toonId);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getToonId()).isEqualTo(toonId);
+        assertThat(response.getTitle()).isEqualTo("테스트 웹툰");
+    }
+
+    @DisplayName("존재하지 않는 웹툰을 조회하려는 경우 예외가 발생한다.")
+    @Test
+    void readNonExistentWebtoon() {
+        // given
+        Long toonId = 999L;
+        given(webtoonRepository.findById(toonId)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> webtoonService.readWebtoon(toonId))
+                .isInstanceOf(WebtoonNotFoundException.class)
+                .hasMessage("해당 웹툰이 존재하지 않습니다.");
+    }
 
     @DisplayName("웹툰 등록에 성공한다.")
     @Test

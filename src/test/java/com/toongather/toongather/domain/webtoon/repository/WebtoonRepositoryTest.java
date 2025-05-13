@@ -1,5 +1,7 @@
 package com.toongather.toongather.domain.webtoon.repository;
 
+import com.toongather.toongather.domain.genrekeyword.domain.GenreKeyword;
+import com.toongather.toongather.domain.genrekeyword.repository.GenreKeywordRepository;
 import com.toongather.toongather.domain.webtoon.domain.*;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchRequest;
 import com.toongather.toongather.domain.webtoon.dto.WebtoonSearchResponse;
