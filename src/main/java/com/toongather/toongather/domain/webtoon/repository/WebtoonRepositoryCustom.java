@@ -7,4 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface WebtoonRepositoryCustom {
     Page<WebtoonSearchResponse> searchAll(WebtoonSearchRequest request, Pageable pageable);
+
+    Page<WebtoonSearchResponse> findRecentReviewedWebtoons(Long memberId, Pageable pageable);
 }

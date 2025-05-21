@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+import static com.toongather.toongather.domain.review.domain.QReview.review;
 import static com.toongather.toongather.domain.webtoon.domain.QWebtoon.webtoon;
 import static com.toongather.toongather.domain.webtoon.domain.QWebtoonGenreKeyword.webtoonGenreKeyword;
 
@@ -47,6 +48,32 @@ public class WebtoonRepositoryImpl implements WebtoonRepositoryCustom {
                 .from(webtoon)
                 .leftJoin(webtoon.webtoonGenreKeywords, webtoonGenreKeyword)
                 .where(buildConditions(request))
+                .fetchOne();
+
+        return new PageImpl<>(webtoons, pageable, total);
+    }
+
+    @Override
+    public Page<WebtoonSearchResponse> findRecentReviewedWebtoons(Long memberId, Pageable pageable) {
+        List<WebtoonSearchResponse> webtoons = queryFactory
+                .select(new QWebtoonSearchResponse(
+                        webtoon.toonId,
+                        webtoon.title,
+                        webtoon.imgPath
+                ))
+                .from(review)
+                .join(review.webtoon, webtoon)
+                .where(review.member.id.eq(memberId))
+                .orderBy(review.regDt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory
+                .select(webtoon.toonId.countDistinct())
+                .from(review)
+                .join(review.webtoon, webtoon)
+                .where(review.member.id.eq(memberId))
                 .fetchOne();
 
         return new PageImpl<>(webtoons, pageable, total);
